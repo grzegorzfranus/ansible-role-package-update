@@ -1,0 +1,267 @@
+---
+# =============================================================================
+# Ansible Role: Package Update - Main Tasks
+# =============================================================================
+# This is the main task file for the Package Update role. It orchestrates the
+# execution of all role components in the correct order. Each task is tagged
+# appropriately to allow for selective execution.
+#
+# Flow:
+# 1. Load OS-specific variables
+# 2. Validate role variables
+# 3. Check for available updates
+# 4. Execute system package update process:
+#    a. Check prerequisites
+#    b. Verify disk space requirements
+#    c. Log packages to be updated
+#    d. Gather pre-update system information
+#    e. Install package updates
+#    f. Check if reboot is required
+#    g. Reboot system if needed
+#    h. Gather post-update system information
+#    i. Verify service status
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# 1. OS-Specific Variables
+# -----------------------------------------------------------------------------
+- name: Package-Update | main | Load OS-specific variables
+  ansible.builtin.include_vars: "{{ lookup('first_found', params) }}"
+  vars:
+    params:
+      files:
+        - "{{ ansible_facts['distribution'] | lower }}_{{ ansible_facts['distribution_version'] | lower }}.yml"
+        - "{{ ansible_facts['distribution'] | lower }}_{{ ansible_facts['distribution_major_version'] | lower }}.yml"
+        - "{{ ansible_facts['distribution'] | lower }}.yml"
+        - "{{ ansible_facts['os_family'] | lower }}_{{ ansible_facts['distribution_version'] | lower }}.yml"
+        - "{{ ansible_facts['os_family'] | lower }}_{{ ansible_facts['distribution_major_version'].split('.')[0] }}.yml"
+        - "{{ ansible_facts['os_family'] | lower }}.yml"
+        - "main.yml"
+      paths:
+        - "{{ role_path }}/vars"
+  tags:
+    - always
+
+# -----------------------------------------------------------------------------
+# 2. Variable Validation
+# -----------------------------------------------------------------------------
+- name: Package-Update | main | Validate role variables
+  ansible.builtin.include_tasks: assert.yml
+  tags:
+    - always
+    - validate
+
+# -----------------------------------------------------------------------------
+# 3. Check for Available Updates
+# -----------------------------------------------------------------------------
+- name: Package-Update | main | Check for available package updates
+  ansible.builtin.include_tasks: check.yml
+  when: >
+    package_update_role_action in ['all', 'check']
+  tags:
+    - always
+    - check
+
+# -----------------------------------------------------------------------------
+# 4. Execute System Package Update Process
+# -----------------------------------------------------------------------------
+- block:
+
+    # -----------------------------------------------------------------------------
+    # 4a. Check Prerequisites
+    # -----------------------------------------------------------------------------
+    - name: Package-Update | main | Verify system prerequisites
+      ansible.builtin.include_tasks: prerequisites.yml
+      tags:
+        - always
+        - prerequisites
+
+    # -----------------------------------------------------------------------------
+    # 4b. Verify Disk Space Requirements
+    # -----------------------------------------------------------------------------
+    - name: Package-Update | main | Verify disk space requirements
+      ansible.builtin.include_tasks: disk_check.yml
+      when: package_update_disk_space_check_enabled | bool
+      tags:
+        - always
+        - disk_check
+
+    # -----------------------------------------------------------------------------
+    # 4c. Log Packages to be Updated
+    # -----------------------------------------------------------------------------
+    - name: Package-Update | main | Log list of packages to upgrade to remote system
+      become: true
+      ansible.builtin.template:
+        src: "{{ item.source }}"
+        dest: "{{ item.destination }}"
+      when: >
+        package_update_log_upgradable_packages | default(false)
+      with_items:
+        - { source: 'templates/packages_info.j2', destination: '{{ package_update_log_directory }}/{{ package_update_log_file_name }}_upgradable-packages' }
+      tags:
+        - always
+        - logging
+
+    - name: Package-Update | main | Log list of packages to upgrade to local system
+      delegate_to: localhost
+      become: false
+      ansible.builtin.template:
+        src: "{{ item.source }}"
+        dest: "{{ item.destination }}"
+      when: >
+        package_update_log_upgradable_packages | default(false)
+      with_items:
+        - { source: 'templates/packages_info.j2', destination: '{{ playbook_dir }}/{{ package_update_log_file_name }}_upgradable-packages' }
+      tags:
+        - always
+        - logging
+
+    # -----------------------------------------------------------------------------
+    # 4d. Gather Pre-Update System Information
+    # -----------------------------------------------------------------------------
+    - name: Package-Update | main | Gather pre-update system information
+      ansible.builtin.include_tasks: pre_info.yml
+      tags:
+        - always
+        - pre_info
+
+    # -----------------------------------------------------------------------------
+    # 4e. Install Package Updates
+    # -----------------------------------------------------------------------------
+    - name: Package-Update | main | Install package updates
+      ansible.builtin.include_tasks: install.yml
+      tags:
+        - always
+        - install
+
+    # -----------------------------------------------------------------------------
+    # 4f. Check if Reboot is Required
+    # -----------------------------------------------------------------------------
+    - name: Package-Update | main | Check if system needs reboot (RedHat)
+      become: true
+      ansible.builtin.command: "needs-restarting -r"
+      register: _reboot_required_redhat_
+      changed_when: _reboot_required_redhat_.rc == 1
+      failed_when: _reboot_required_redhat_.rc != 0 and _reboot_required_redhat_.rc != 1
+      when: >
+        ansible_os_family | lower == "redhat"
+      tags:
+        - always
+        - reboot_check
+
+    - name: Package-Update | main | Check if system needs reboot (Debian)
+      become: true
+      ansible.builtin.stat:
+        path: "/var/run/reboot-required"
+      register: _reboot_required_debian_
+      when: >
+        ansible_os_family | lower == "debian"
+      tags:
+        - always
+        - reboot_check
+
+    - name: Package-Update | main | Check if services need reboot (RedHat)
+      become: true
+      ansible.builtin.command: "needs-restarting -s"
+      register: _reboot_required_services_redhat_
+      changed_when: _reboot_required_services_redhat_.rc == 1
+      failed_when: _reboot_required_services_redhat_.rc != 0 and _reboot_required_services_redhat_.rc != 1
+      when: >
+        ansible_os_family | lower == "redhat"
+      tags:
+        - always
+        - reboot_check
+
+    - name: Package-Update | main | Check if services need reboot (Debian)
+      become: true
+      ansible.builtin.stat:
+        path: "/var/run/reboot-required.pkgs"
+      register: _reboot_required_services_debian
+      when: >
+        ansible_os_family | lower == "debian"
+      tags:
+        - always
+        - reboot_check
+
+    # -----------------------------------------------------------------------------
+    # 4g. Reboot System if Needed
+    # -----------------------------------------------------------------------------
+    - name: Package-Update | main | Reboot system if required (RedHat)
+      ansible.builtin.include_tasks: reboot.yml
+      when: >
+        ( ansible_os_family | lower == "redhat" and _reboot_required_redhat_.rc == 1 ) or
+        ( ansible_os_family | lower == "redhat" and _reboot_required_services_redhat_.rc == 1 )
+      tags:
+        - always
+        - reboot
+
+    - name: Package-Update | main | Reboot system if required (Debian)
+      ansible.builtin.include_tasks: reboot.yml
+      when: >
+        ( ansible_os_family | lower == "debian" and _reboot_required_debian_.stat.exists ) or
+        ( ansible_os_family | lower == "debian" and _reboot_required_services_debian.stat.exists )
+      tags:
+        - always
+        - reboot
+
+    # -----------------------------------------------------------------------------
+    # 4h. Gather Post-Update System Information
+    # -----------------------------------------------------------------------------
+    - name: Package-Update | main | Gather post-update system information
+      ansible.builtin.include_tasks: post_info.yml
+      tags:
+        - always
+        - post_info
+
+    # -----------------------------------------------------------------------------
+    # 4i. Verify Service Status
+    # -----------------------------------------------------------------------------
+    - name: Package-Update | main | Check if all pre-update services are running
+      ansible.builtin.set_fact:
+        _faulty_services_: "{{ _pre_running_services_ | difference(_post_running_services_) }}"
+      tags:
+        - always
+        - service_check
+
+    - name: Package-Update | main | Display stopped services after update
+      ansible.builtin.debug:
+        var: _faulty_services_
+      when: >
+        _faulty_services_ is defined and
+        _faulty_services_ | length > 0
+      tags:
+        - always
+        - service_check
+
+    - name: Package-Update | main | Log faulty services to remote system
+      become: true
+      ansible.builtin.template:
+        src: "{{ item.source }}"
+        dest: "{{ item.destination }}"
+      when: >
+        _faulty_services_ is defined and
+        _faulty_services_ | length > 0
+      with_items:
+        - { source: 'templates/faulty_services.j2', destination: '{{ package_update_log_directory }}/{{ package_update_log_file_name }}_faulty-services' }
+      tags:
+        - always
+        - logging
+
+    - name: Package-Update | main | Log faulty services to local system
+      delegate_to: localhost
+      become: false
+      ansible.builtin.template:
+        src: "{{ item.source }}"
+        dest: "{{ item.destination }}"
+      when: >
+        _faulty_services_ is defined and
+        _faulty_services_ | length > 0
+      with_items:
+        - { source: 'templates/faulty_services.j2', destination: '{{ playbook_dir }}/{{ package_update_log_file_name }}_faulty-services' }
+      tags:
+        - always
+        - logging
+
+  when: >
+    package_update_role_action in ['all'] and
+    package_update_availability | default(false)

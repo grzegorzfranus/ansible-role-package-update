@@ -1,0 +1,36 @@
+# =============================================================================
+# Ansible Role: Package-Update - Molecule Preparation Playbook
+# =============================================================================
+# This playbook prepares the test environment for Molecule testing.
+# It performs necessary system preparations before role execution:
+# - Fixes file permissions
+# - Validates system requirements
+# - Sets up required dependencies for package management
+#
+# Flow:
+# 1. Fix system file permissions
+# 2. Validate system state
+# =============================================================================
+
+---
+# -----------------------------------------------------------------------------
+# 1. System Preparation
+# -----------------------------------------------------------------------------
+- name: molecule | Prepare
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: Prepare | Fix /etc/shadow permissions
+      register: etc_shadow
+      ansible.builtin.shell:
+        cmd: |
+          echo ""
+          ls -l /etc/shadow
+          chmod 0400 /etc/shadow
+          ls -l /etc/shadow
+          echo ""
+
+    - name: Prepare | Verify shadow file permissions
+      ansible.builtin.debug:
+        var: etc_shadow.stdout

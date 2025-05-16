@@ -1,0 +1,62 @@
+---
+# =============================================================================
+# Ansible Role: Package Update - Disk Space Verification Tasks
+# =============================================================================
+# This file contains tasks to verify disk space before updating packages.
+#
+# Flow:
+# 1. Gather disk space information
+# 2. Evaluate available space against requirements
+# 3. Abort if requirements not met (optional)
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# 1. Gather Disk Space Information
+# -----------------------------------------------------------------------------
+- name: Package-Update | disk_check | Check available disk space
+  become: true
+  ansible.builtin.shell: df -B1M {{ item }} | awk 'NR==2 {print $4}'
+  register: disk_space_result
+  changed_when: false
+  loop: "{{ package_update_disk_check_paths }}"
+  when: package_update_disk_space_check_enabled | bool
+
+# -----------------------------------------------------------------------------
+# 2. Evaluate Available Space
+# -----------------------------------------------------------------------------
+- name: Package-Update | disk_check | Set facts for path with insufficient space
+  ansible.builtin.set_fact:
+    disk_space_insufficient: "{{ disk_space_insufficient | default([]) + [{'path': item.item, 'available': item.stdout | int}] }}"
+  loop: "{{ disk_space_result.results }}"
+  when:
+    - package_update_disk_space_check_enabled | bool
+    - item.stdout | int < package_update_min_disk_space_mb
+
+- name: Package-Update | disk_check | Display paths with insufficient space
+  ansible.builtin.debug:
+    msg: |
+      WARNING: Insufficient disk space detected:
+      {% for item in disk_space_insufficient %}
+      - Path: {{ item.path }}
+        Available: {{ item.available }} MB
+        Required: {{ package_update_min_disk_space_mb }} MB
+      {% endfor %}
+  when:
+    - package_update_disk_space_check_enabled | bool
+    - disk_space_insufficient is defined
+    - disk_space_insufficient | length > 0
+
+# -----------------------------------------------------------------------------
+# 3. Abort If Requirements Not Met
+# -----------------------------------------------------------------------------
+- name: Package-Update | disk_check | Fail if insufficient disk space and abort enabled
+  ansible.builtin.fail:
+    msg: >
+      Update aborted due to insufficient disk space.
+      Minimum required: {{ package_update_min_disk_space_mb }} MB.
+      Please free up disk space and try again.
+  when:
+    - package_update_disk_space_check_enabled | bool
+    - package_update_abort_on_disk_space_error | bool
+    - disk_space_insufficient is defined
+    - disk_space_insufficient | length > 0

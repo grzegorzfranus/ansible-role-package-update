@@ -1,0 +1,78 @@
+---
+# =============================================================================
+# Ansible Role: Package Update - Check Tasks
+# =============================================================================
+# This file contains tasks to check for available package updates.
+#
+# Flow:
+# 1. Update package cache
+# 2. Check for available updates
+# 3. Set upgrade availability flag
+# 4. Display available packages (optional)
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# 1. Update Package Cache
+# -----------------------------------------------------------------------------
+- name: Package-Update | check | Update package cache (RedHat)
+  become: true
+  ansible.builtin.dnf:
+    update_cache: true
+  when: >
+    ansible_os_family | lower == "redhat" and
+    ansible_pkg_mgr == "dnf"
+
+- name: Package-Update | check | Update package cache (Debian)
+  become: true
+  ansible.builtin.apt:
+    update_cache: true
+  when: >
+    ansible_os_family | lower == "debian" and
+    ansible_pkg_mgr == "apt"
+
+# -----------------------------------------------------------------------------
+# 2. Check for Available Updates
+# -----------------------------------------------------------------------------
+- name: Package-Update | check | Check for available packages to upgrade
+  become: true
+  ansible.builtin.command: "{{ package_update_check_update_command }}"
+  register: _update_check_result_
+  no_log: true
+  changed_when: false
+  failed_when: _update_check_result_.rc >= 2
+
+# -----------------------------------------------------------------------------
+# 3. Set Upgrade Availability Flag
+# -----------------------------------------------------------------------------
+- name: Package-Update | check | Set upgrade availability flag (RedHat)
+  ansible.builtin.set_fact:
+    package_update_availability: true
+  when: >
+    _update_check_result_.rc == 1 and
+    ansible_os_family | lower == "redhat"
+
+- name: Package-Update | check | Set upgrade availability flag (Debian)
+  ansible.builtin.set_fact:
+    package_update_availability: true
+  when: >
+    _update_check_result_.stdout_lines | length > 1 and
+    ansible_os_family | lower == "debian"
+
+# -----------------------------------------------------------------------------
+# 4. Display Available Packages (Optional)
+# -----------------------------------------------------------------------------
+- name: Package-Update | check | Display available packages (RedHat)
+  ansible.builtin.debug:
+    var: _update_check_result_.stdout_lines
+  when: >
+    package_update_display_upgradable_packages | default(false) and
+    _update_check_result_.rc == 1 and
+    ansible_os_family | lower == "redhat"
+
+- name: Package-Update | check | Display available packages (Debian)
+  ansible.builtin.debug:
+    var: _update_check_result_.stdout_lines
+  when: >
+    package_update_display_upgradable_packages | default(false) and
+    _update_check_result_.stdout_lines | length > 1 and
+    ansible_os_family | lower == "debian"

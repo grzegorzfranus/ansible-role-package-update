@@ -1,0 +1,172 @@
+---
+# =============================================================================
+# Ansible Role: Package Update - Variable Validation Tasks
+# =============================================================================
+# This file contains tasks to validate role variables.
+#
+# Flow:
+# 1. Validate role action
+# 2. Validate package management settings
+# 3. Validate logging settings
+# 4. Validate disk space settings
+# 5. Validate reboot settings (optional)
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# 1. Role Action Validation
+# -----------------------------------------------------------------------------
+- name: Package-Update | assert | Validate role action parameter
+  ansible.builtin.assert:
+    that:
+      - package_update_role_action is defined
+      - package_update_role_action is string
+      - package_update_role_action in [ "all", "check" ]
+    quiet: true
+
+# -----------------------------------------------------------------------------
+# 2. Package Management Settings Validation
+# -----------------------------------------------------------------------------
+- name: Package-Update | assert | Validate package management settings
+  ansible.builtin.assert:
+    that:
+      - package_update_display_upgradable_packages is defined
+      - package_update_display_upgradable_packages is boolean
+    quiet: true
+
+- name: Package-Update | assert | Validate update mode
+  ansible.builtin.assert:
+    that:
+      - package_update_mode is defined
+      - package_update_mode is string
+      - package_update_mode in [ "all", "security", "selected" ]
+    quiet: true
+
+- name: Package-Update | assert | Validate included packages list (if defined)
+  ansible.builtin.assert:
+    that:
+      - package_update_include_packages_list is sequence
+    quiet: true
+  when:
+    - package_update_include_packages_list is defined
+
+- name: Package-Update | assert | Validate check update command
+  ansible.builtin.assert:
+    that:
+      - package_update_check_update_command is defined
+      - package_update_check_update_command is string
+      - package_update_check_update_command | length > 0
+    quiet: true
+
+- name: Package-Update | assert | Validate excluded packages list (if defined)
+  ansible.builtin.assert:
+    that:
+      - package_update_excluded_packages_list is sequence
+    quiet: true
+  when:
+    - package_update_excluded_packages_list is defined
+
+# -----------------------------------------------------------------------------
+# 3. Logging Settings Validation
+# -----------------------------------------------------------------------------
+- name: Package-Update | assert | Validate logging settings
+  ansible.builtin.assert:
+    that:
+      - package_update_log_upgradable_packages is defined
+      - package_update_log_upgradable_packages is boolean
+      - package_update_log_directory is defined
+      - package_update_log_directory is string
+      - package_update_log_file_name is defined
+      - package_update_log_file_name is string
+    quiet: true
+
+# -----------------------------------------------------------------------------
+# 4. Disk Space Verification Settings
+# -----------------------------------------------------------------------------
+- name: Package-Update | assert | Validate disk space check settings
+  ansible.builtin.assert:
+    that:
+      - package_update_disk_space_check_enabled is defined
+      - package_update_disk_space_check_enabled is boolean
+      - package_update_min_disk_space_mb is defined
+      - package_update_min_disk_space_mb | int >= 0
+      - package_update_abort_on_disk_space_error is defined
+      - package_update_abort_on_disk_space_error is boolean
+    quiet: true
+
+- name: Package-Update | assert | Validate disk check paths
+  ansible.builtin.assert:
+    that:
+      - package_update_disk_check_paths is sequence
+    quiet: true
+  when:
+    - package_update_disk_check_paths is defined
+
+# -----------------------------------------------------------------------------
+# 5. Reboot Settings Validation (Optional)
+# -----------------------------------------------------------------------------
+# Note: The reboot variables use the default_ prefix in reboot.yml
+# These variables are optional and will default to values in reboot.yml if not provided
+
+- name: Package-Update | assert | Validate reboot message (if defined)
+  ansible.builtin.assert:
+    that:
+      - default_reboot_message is string
+    quiet: true
+  when:
+    - default_reboot_message is defined
+
+- name: Package-Update | assert | Validate reboot wait settings (if defined)
+  ansible.builtin.assert:
+    that:
+      - default_reboot_wait is boolean
+    quiet: true
+  when:
+    - default_reboot_wait is defined
+
+- name: Package-Update | assert | Validate reboot connect timeout (if defined)
+  ansible.builtin.assert:
+    that:
+      - default_reboot_connect_timeout | string | regex_search('^[0-9]+$')
+    quiet: true
+  when:
+    - default_reboot_connect_timeout is defined
+
+- name: Package-Update | assert | Validate reboot wait sleep (if defined)
+  ansible.builtin.assert:
+    that:
+      - default_reboot_wait_ctimeout | string | regex_search('^[0-9]+$')
+    quiet: true
+  when:
+    - default_reboot_wait_ctimeout is defined
+
+- name: Package-Update | assert | Validate reboot wait delay (if defined)
+  ansible.builtin.assert:
+    that:
+      - default_reboot_wait_delay | string | regex_search('^[0-9]+$')
+    quiet: true
+  when:
+    - default_reboot_wait_delay is defined
+
+- name: Package-Update | assert | Validate reboot wait timeout (if defined)
+  ansible.builtin.assert:
+    that:
+      - default_reboot_wait_timeout | string | regex_search('^[0-9]+$')
+    quiet: true
+  when:
+    - default_reboot_wait_timeout is defined
+
+- name: Package-Update | assert | Validate reboot interval (if defined)
+  ansible.builtin.assert:
+    that:
+      - default_reboot_interval is boolean
+    quiet: true
+  when:
+    - default_reboot_interval is defined
+
+- name: Package-Update | assert | Validate reboot interval seconds (if defined)
+  ansible.builtin.assert:
+    that:
+      - default_reboot_interval_seconds | string | regex_search('^[0-9]+$')
+    quiet: true
+  when:
+    - default_reboot_interval_seconds is defined

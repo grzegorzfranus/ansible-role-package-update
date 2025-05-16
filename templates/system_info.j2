@@ -1,0 +1,24 @@
+#jinja2: trim_blocks: True, lstrip_blocks: True
+# =============================================================================
+# Package Update Report: System Information
+# =============================================================================
+# Report time: {{ ansible_date_time.iso8601 }}
+
+# -----------------------------------------------------------------------------
+# System Details
+# -----------------------------------------------------------------------------
+Hostname: {{ ansible_hostname }}
+
+BOOT image: {{ ansible_cmdline.BOOT_IMAGE }}
+Kernel: {{ ansible_kernel }}
+
+OS family: {{ ansible_os_family }}
+OS distribution: {{ ansible_distribution }}
+OS distribution release: {{ ansible_distribution_release }}
+OS distribution version: {{ ansible_distribution_version }}
+OS distribution major version: {{ ansible_distribution_major_version }}
+
+# -----------------------------------------------------------------------------
+# Installed Packages
+# -----------------------------------------------------------------------------
+{{ ansible_facts.packages | to_nice_json }}

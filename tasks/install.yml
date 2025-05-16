@@ -1,0 +1,180 @@
+---
+# =============================================================================
+# Ansible Role: Package Update - Installation Tasks
+# =============================================================================
+# This file contains tasks to install package updates.
+#
+# Flow:
+# 1. All packages update mode
+# 2. Security packages update mode
+# 3. Selected packages update mode
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# 1. All Packages Update Mode
+# -----------------------------------------------------------------------------
+- name: Package-Update | install | Update all packages
+  block:
+    - name: Package-Update | install | Upgrade all packages without exclusions
+      block:
+        - name: Package-Update | install | Upgrade all packages with dnf
+          become: true
+          ansible.builtin.dnf:
+            name: "*"
+            state: latest
+          async: 3600
+          poll: 10
+          when: >
+            ansible_os_family | lower == "redhat" and
+            ansible_pkg_mgr == "dnf"
+
+        - name: Package-Update | install | Upgrade all packages with apt
+          become: true
+          ansible.builtin.apt:
+            name: "*"
+            state: latest
+          async: 3600
+          poll: 10
+          when: >
+            ansible_os_family | lower == "debian" and
+            ansible_pkg_mgr == "apt"
+      when: >
+        package_update_excluded_packages_list is undefined or
+        ( package_update_excluded_packages_list is defined and package_update_excluded_packages_list | length == 0 )
+
+    - name: Package-Update | install | Upgrade all packages with exclusions
+      block:
+        - name: Package-Update | install | Upgrade all packages excluding specified (RedHat)
+          become: true
+          ansible.builtin.dnf:
+            name: "*"
+            state: latest
+            exclude: "{{ package_update_excluded_packages_list }}"
+          async: 3600
+          poll: 10
+          when: >
+            ansible_os_family | lower == "redhat" and
+            ansible_pkg_mgr == "dnf"
+
+        - name: Package-Update | install | Mark excluded packages (Debian)
+          become: true
+          ansible.builtin.dpkg_selections:
+            name: "{{ item }}"
+            selection: hold
+          loop: "{{ package_update_excluded_packages_list }}"
+          when: >
+            ansible_os_family | lower == "debian" and
+            ansible_pkg_mgr == "apt"
+
+        - name: Package-Update | install | Upgrade all packages with exclusions (Debian)
+          become: true
+          ansible.builtin.apt:
+            name: "*"
+            state: latest
+          async: 3600
+          poll: 10
+          when: >
+            ansible_os_family | lower == "debian" and
+            ansible_pkg_mgr == "apt"
+
+        - name: Package-Update | install | Unmark excluded packages (Debian)
+          become: true
+          ansible.builtin.dpkg_selections:
+            name: "{{ item }}"
+            selection: install
+          loop: "{{ package_update_excluded_packages_list }}"
+          when: >
+            ansible_os_family | lower == "debian" and
+            ansible_pkg_mgr == "apt"
+      when: >
+        package_update_excluded_packages_list is defined and
+        package_update_excluded_packages_list | length > 0
+  when: package_update_mode == "all"
+
+# -----------------------------------------------------------------------------
+# 2. Security Updates Mode
+# -----------------------------------------------------------------------------
+- name: Package-Update | install | Update security packages only
+  block:
+    - name: Package-Update | install | Update security packages only (RedHat)
+      become: true
+      ansible.builtin.dnf:
+        name: "*"
+        state: latest
+        security: true
+        exclude: "{{ package_update_excluded_packages_list | default([]) }}"
+      async: 3600
+      poll: 10
+      when: >
+        ansible_os_family | lower == "redhat" and
+        ansible_pkg_mgr == "dnf"
+
+    - name: Package-Update | install | Update security packages only (Debian)
+      become: true
+      block:
+        - name: Package-Update | install | Mark excluded packages (Debian)
+          ansible.builtin.dpkg_selections:
+            name: "{{ item }}"
+            selection: hold
+          loop: "{{ package_update_excluded_packages_list | default([]) }}"
+          when: >
+            package_update_excluded_packages_list is defined and
+            package_update_excluded_packages_list | length > 0
+
+        - name: Package-Update | install | Update security packages with apt
+          ansible.builtin.apt:
+            upgrade: yes
+            update_cache: yes
+            cache_valid_time: 3600
+            # The '-o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold"' options
+            # will keep any existing config file and not prompt for input
+            dpkg_options: 'force-confdef,force-confold'
+            # Only install security updates
+            only_upgrade: '{{ (ansible_distribution_version is version("18.04", ">=")) | ternary("yes", omit) }}'
+            default_release: '{{ ansible_distribution_release }}-security'
+          async: 3600
+          poll: 10
+
+        - name: Package-Update | install | Unmark excluded packages (Debian)
+          ansible.builtin.dpkg_selections:
+            name: "{{ item }}"
+            selection: install
+          loop: "{{ package_update_excluded_packages_list | default([]) }}"
+          when: >
+            package_update_excluded_packages_list is defined and
+            package_update_excluded_packages_list | length > 0
+      when: >
+        ansible_os_family | lower == "debian" and
+        ansible_pkg_mgr == "apt"
+  when: package_update_mode == "security"
+
+# -----------------------------------------------------------------------------
+# 3. Selected Packages Update Mode
+# -----------------------------------------------------------------------------
+- name: Package-Update | install | Update selected packages only
+  block:
+    - name: Package-Update | install | Upgrade selected packages (RedHat)
+      become: true
+      ansible.builtin.dnf:
+        name: "{{ package_update_include_packages_list }}"
+        state: latest
+      async: 3600
+      poll: 10
+      when: >
+        ansible_os_family | lower == "redhat" and
+        ansible_pkg_mgr == "dnf"
+
+    - name: Package-Update | install | Upgrade selected packages (Debian)
+      become: true
+      ansible.builtin.apt:
+        name: "{{ package_update_include_packages_list }}"
+        state: latest
+      async: 3600
+      poll: 10
+      when: >
+        ansible_os_family | lower == "debian" and
+        ansible_pkg_mgr == "apt"
+  when: >
+    package_update_mode == "selected" and
+    package_update_include_packages_list is defined and
+    package_update_include_packages_list | length > 0

@@ -1,0 +1,51 @@
+---
+galaxy_info:
+  role_name: package_update
+  author: Grzegorz Franus
+  namespace: grzegorzfranus
+  description: >
+    Ansible role to manage system package updates across various Linux distributions.
+  license: Apache-2.0
+  company: EWARE
+  min_ansible_version: "2.15"
+
+  platforms:
+    - name: Debian
+      versions:
+        - "bookworm"
+        - "bullseye"
+      galaxy_tags:
+        - debian
+        - debian12
+        - debian11
+    - name: Ubuntu
+      versions:
+        - "noble"
+        - "jammy"
+      galaxy_tags:
+        - ubuntu
+        - ubuntu24
+        - ubuntu22
+    - name: Rocky
+      versions:
+        - "9.0"
+      galaxy_tags:
+        - rocky
+        - rocky9
+    - name: OracleLinux
+      versions:
+        - "9.0"
+      galaxy_tags:
+        - oracle
+        - oracle9
+
+  galaxy_tags:
+    - package
+    - update
+    - upgrade
+    - system
+    - maintenance
+    - patching
+    - security
+
+dependencies: []

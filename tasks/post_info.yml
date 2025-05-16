@@ -1,0 +1,55 @@
+---
+# =============================================================================
+# Ansible Role: Package Update - Post-Update Information Tasks
+# =============================================================================
+# This file contains tasks to gather and log system information after updates.
+#
+# Flow:
+# 1. Gather package and service facts
+# 2. Record running services
+# 3. Log system information to remote and local files
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# 1. Gather System Facts
+# -----------------------------------------------------------------------------
+- name: Package-Update | post_info | Gather package facts
+  become: true
+  ansible.builtin.package_facts:
+    manager: auto
+  no_log: true
+
+- name: Package-Update | post_info | Gather service facts
+  become: true
+  ansible.builtin.service_facts:
+  no_log: true
+
+# -----------------------------------------------------------------------------
+# 2. Record Running Services
+# -----------------------------------------------------------------------------
+- name: Package-Update | post_info | Record currently running services
+  ansible.builtin.set_fact:
+    _post_running_services_: "{{ ansible_facts.services | dict2items
+      | selectattr('value.state', '==', 'running') | map(attribute='key') }}"
+
+# -----------------------------------------------------------------------------
+# 3. Log System Information
+# -----------------------------------------------------------------------------
+- name: Package-Update | post_info | Log information to remote system
+  become: true
+  ansible.builtin.template:
+    src: "{{ item.source }}"
+    dest: "{{ item.destination }}"
+  with_items:
+    - { source: 'templates/system_info.j2', destination: '{{ package_update_log_directory }}/{{ package_update_log_file_name }}_post-system-info' }
+    - { source: 'templates/post_services_info.j2', destination: '{{ package_update_log_directory }}/{{ package_update_log_file_name }}_post-running-services' }
+
+- name: Package-Update | post_info | Log information to local system
+  delegate_to: localhost
+  become: false
+  ansible.builtin.template:
+    src: "{{ item.source }}"
+    dest: "{{ item.destination }}"
+  with_items:
+    - { source: 'templates/system_info.j2', destination: '{{ playbook_dir }}/{{ package_update_log_file_name }}_post-system-info' }
+    - { source: 'templates/post_services_info.j2', destination: '{{ playbook_dir }}/{{ package_update_log_file_name }}_post-running-services' }

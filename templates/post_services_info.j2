@@ -1,0 +1,7 @@
+#jinja2: trim_blocks: True, lstrip_blocks: True
+# =============================================================================
+# Package Update Report: Post-Update Running Services
+# =============================================================================
+# Report time: {{ ansible_date_time.iso8601 }}
+
+{{ _post_running_services_ | to_nice_json }}

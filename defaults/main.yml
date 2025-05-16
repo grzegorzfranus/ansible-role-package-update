@@ -1,0 +1,83 @@
+---
+# =============================================================================
+# Ansible Role: Package Update - Default Variables
+# =============================================================================
+# This file defines default configuration values for the Package Update role.
+# These values can be overridden by setting them in your playbook or inventory.
+#
+# This role handles system package updates, including verification, installation,
+# and post-update checks with controlled system reboots if needed.
+#
+# Sections:
+#   1. General Settings
+#   2. Package Management Settings
+#   3. Logging Settings
+#   4. Disk Space Verification Settings
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# 1. General Settings
+# -----------------------------------------------------------------------------
+# Role execution control and basic configuration
+
+# Define which parts of the role to execute (Options: 'all', 'check')
+package_update_role_action: "all"
+
+# -----------------------------------------------------------------------------
+# 2. Package Management Settings
+# -----------------------------------------------------------------------------
+# Control which packages to update and how
+
+# Update mode (all, security, selected)
+# - all: Update all packages
+# - security: Update only security packages
+# - selected: Update only packages in include list
+package_update_mode: "all"
+
+# Include specific packages (only used when package_update_mode is "selected")
+# Leave empty or undefined to update all packages when mode is "all" or "security"
+package_update_include_packages_list: []
+
+# List of packages to exclude from update
+# Leave empty or undefined to update all packages
+# package_update_excluded_packages_list:
+#   - openssh-server*
+#   - kernel*
+#   - dnf
+
+# Display available packages to upgrade in output
+package_update_display_upgradable_packages: false
+
+# -----------------------------------------------------------------------------
+# 3. Logging Settings
+# -----------------------------------------------------------------------------
+# Configure how package updates are logged
+
+# Enable logging of available packages and system changes
+package_update_log_upgradable_packages: true
+
+# Directory for logs
+package_update_log_directory: "/var/log/package-update"
+
+# Base filename for log files
+package_update_log_file_name: "package-update"
+
+# -----------------------------------------------------------------------------
+# 4. Disk Space Verification Settings
+# -----------------------------------------------------------------------------
+# Ensure sufficient disk space before updates
+
+# Enable disk space verification before updates
+package_update_disk_space_check_enabled: true
+
+# Minimum required disk space in MB for safe update
+package_update_min_disk_space_mb: 500
+
+# Paths to check for disk space (leave empty to check only /)
+package_update_disk_check_paths:
+  - "/"
+  - "/var"
+  - "/boot"
+
+# Abort update if disk space requirements are not met
+package_update_abort_on_disk_space_error: true

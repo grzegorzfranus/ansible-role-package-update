@@ -1,0 +1,16 @@
+---
+# =============================================================================
+# Ansible Role: Package Update - RedHat-Specific Variables
+# =============================================================================
+# This file defines variables specific to RedHat-based distributions.
+# These values override or supplement the common variables defined in main.yml.
+#
+# Sections:
+#   1. Package Management Commands
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# 1. Package Management Commands
+# -----------------------------------------------------------------------------
+# Command used to check for available package updates on RedHat systems
+package_update_check_update_command: "dnf upgrade --assumeno"
