@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 ## [1.0.2] - 2025-06-26
 
+### Fixed 🔧
+- Fixed variable validation logic in `tasks/assert.yml`:
+  - Split `package_update_include_packages_list` validation into two separate assertions
+  - Non-empty list validation now only applies when `package_update_mode` is "selected"
+  - Improved error messages with clear guidance on mode requirements
+- Fixed log file naming in `vars/main.yml`:
+  - Removed spaces from dynamically generated log file names
+  - Updated template format to prevent file system compatibility issues
+  - Maintained hostname and timestamp format without spaces
+
 ### Enhanced ✅
 - Added emojis to all main sections in README.md for better visual organization:
   - 📋 Requirements
@@ -13,6 +23,9 @@ All notable changes to this project will be documented in this file.
   - 🎯 Main Actions (updated)
 - Removed unnecessary "Architecture" section from README.md to simplify documentation
 - Improved document structure and readability with consistent emoji usage
+- Enhanced code quality compliance:
+  - All files now pass yamllint validation without warnings
+  - All files maintain ansible-lint "production" profile compliance
 
 ## [1.0.1] - 2025-06-26
 

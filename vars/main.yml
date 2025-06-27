@@ -14,5 +14,5 @@
 # -----------------------------------------------------------------------------
 # Log file name format with hostname and timestamp
 package_update_log_file_name: >-
-  {{ ansible_hostname }}_{{ ansible_date_time.year }}-{{ ansible_date_time.month }}-{{ ansible_date_time.day }}_
-  {{ ansible_date_time.hour }}-{{ ansible_date_time.minute }}-{{ ansible_date_time.second }}
+  {{ ansible_hostname }}_{{ ansible_date_time.year }}-{{ ansible_date_time.month }}-{{ ansible_date_time.day }}_{{
+  ansible_date_time.hour }}-{{ ansible_date_time.minute }}-{{ ansible_date_time.second }}

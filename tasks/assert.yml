@@ -50,11 +50,19 @@
   ansible.builtin.assert:
     that:
       - package_update_include_packages_list is sequence
-      - package_update_include_packages_list | length > 0
-    fail_msg: "❌ Invalid included packages list. Must be a non-empty sequence/list"
+    fail_msg: "❌ Invalid included packages list. Must be a sequence/list"
     success_msg: "✅ Included packages list is valid with {{ package_update_include_packages_list | length }} packages"
   when: >
     package_update_include_packages_list is defined
+
+- name: 🧪 Package-Update | assert | Validate included packages list is not empty when mode is selected
+  ansible.builtin.assert:
+    that:
+      - package_update_include_packages_list | length > 0
+    fail_msg: "❌ Included packages list cannot be empty when update mode is 'selected'. Please specify packages to update or change mode to 'all' or 'security'"
+    success_msg: "✅ Included packages list contains {{ package_update_include_packages_list | length }} packages for selected mode"
+  when: >
+    package_update_mode == "selected"
 
 - name: 🧪 Package-Update | assert | Validate check update command
   ansible.builtin.assert:
