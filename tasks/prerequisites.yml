@@ -13,7 +13,7 @@
 # -----------------------------------------------------------------------------
 # 1. Install Required Packages
 # -----------------------------------------------------------------------------
-- name: Package-Update | prerequisites | Install dnf-utils package (RedHat)
+- name: 📦 Package-Update | prerequisites | Install dnf-utils package (RedHat)
   become: true
   ansible.builtin.package:
     name: dnf-utils
@@ -25,7 +25,7 @@
 # -----------------------------------------------------------------------------
 # 2. Create Logging Directory
 # -----------------------------------------------------------------------------
-- name: Package-Update | prerequisites | Create log directory
+- name: 📁 Package-Update | prerequisites | Create log directory
   become: true
   ansible.builtin.file:
     path: "{{ package_update_log_directory }}"

@@ -89,7 +89,8 @@
       when: >
         package_update_excluded_packages_list is defined and
         package_update_excluded_packages_list | length > 0
-  when: package_update_mode == "all"
+  when: >
+    package_update_mode == "all"
 
 # -----------------------------------------------------------------------------
 # 2. Security Updates Mode
@@ -146,7 +147,8 @@
       when: >
         ansible_os_family | lower == "debian" and
         ansible_pkg_mgr == "apt"
-  when: package_update_mode == "security"
+  when: >
+    package_update_mode == "security"
 
 # -----------------------------------------------------------------------------
 # 3. Selected Packages Update Mode

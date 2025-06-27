@@ -1,105 +1,147 @@
 ---
 # =============================================================================
-# Ansible Role: Package Update - Variable Validation Tasks
+# Ansible Role: Package Update - Variable Assertions
 # =============================================================================
-# This file contains tasks to validate role variables.
+# This file contains assertions to validate all variables used in the role.
+# Each assertion ensures that variables are defined and have correct types/values.
+# These validations help prevent configuration errors and ensure secure defaults.
 #
 # Flow:
-# 1. Validate role action
-# 2. Validate package management settings
-# 3. Validate logging settings
-# 4. Validate disk space settings
-# 5. Validate reboot settings (optional)
+# 1. Role Action Validation
+# 2. Package Management Settings Validation
+# 3. Logging Settings Validation
+# 4. Disk Space Verification Settings
+# 5. Reboot Settings Validation (Optional)
 # =============================================================================
 
 # -----------------------------------------------------------------------------
 # 1. Role Action Validation
 # -----------------------------------------------------------------------------
-- name: Package-Update | assert | Validate role action parameter
+- name: 🧪 Package-Update | assert | Validate role action parameter
   ansible.builtin.assert:
     that:
       - package_update_role_action is defined
       - package_update_role_action is string
-      - package_update_role_action in [ "all", "check" ]
-    quiet: true
+      - package_update_role_action in ["all", "check"]
+    fail_msg: "❌ Invalid role action '{{ package_update_role_action | default('undefined') }}'. Must be one of: all, check"
+    success_msg: "✅ Role action parameter is valid: {{ package_update_role_action }}"
 
 # -----------------------------------------------------------------------------
 # 2. Package Management Settings Validation
 # -----------------------------------------------------------------------------
-- name: Package-Update | assert | Validate package management settings
+- name: 🧪 Package-Update | assert | Validate package display setting
   ansible.builtin.assert:
     that:
       - package_update_display_upgradable_packages is defined
       - package_update_display_upgradable_packages is boolean
-    quiet: true
+    fail_msg: "❌ Invalid display upgradable packages setting '{{ package_update_display_upgradable_packages | default('undefined') }}'. Must be boolean (true/false)"
+    success_msg: "✅ Display upgradable packages setting is valid: {{ package_update_display_upgradable_packages }}"
 
-- name: Package-Update | assert | Validate update mode
+- name: 🧪 Package-Update | assert | Validate update mode
   ansible.builtin.assert:
     that:
       - package_update_mode is defined
       - package_update_mode is string
-      - package_update_mode in [ "all", "security", "selected" ]
-    quiet: true
+      - package_update_mode in ["all", "security", "selected"]
+    fail_msg: "❌ Invalid update mode '{{ package_update_mode | default('undefined') }}'. Must be one of: all, security, selected"
+    success_msg: "✅ Update mode is valid: {{ package_update_mode }}"
 
-- name: Package-Update | assert | Validate included packages list (if defined)
+- name: 🧪 Package-Update | assert | Validate included packages list (if defined)
   ansible.builtin.assert:
     that:
       - package_update_include_packages_list is sequence
-    quiet: true
-  when:
-    - package_update_include_packages_list is defined
+      - package_update_include_packages_list | length > 0
+    fail_msg: "❌ Invalid included packages list. Must be a non-empty sequence/list"
+    success_msg: "✅ Included packages list is valid with {{ package_update_include_packages_list | length }} packages"
+  when: >
+    package_update_include_packages_list is defined
 
-- name: Package-Update | assert | Validate check update command
+- name: 🧪 Package-Update | assert | Validate check update command
   ansible.builtin.assert:
     that:
       - package_update_check_update_command is defined
       - package_update_check_update_command is string
       - package_update_check_update_command | length > 0
-    quiet: true
+    fail_msg: "❌ Invalid check update command '{{ package_update_check_update_command | default('undefined') }}'. Must be a non-empty string"
+    success_msg: "✅ Check update command is valid: {{ package_update_check_update_command }}"
 
-- name: Package-Update | assert | Validate excluded packages list (if defined)
+- name: 🧪 Package-Update | assert | Validate excluded packages list (if defined)
   ansible.builtin.assert:
     that:
       - package_update_excluded_packages_list is sequence
-    quiet: true
-  when:
-    - package_update_excluded_packages_list is defined
+    fail_msg: "❌ Invalid excluded packages list. Must be a sequence/list"
+    success_msg: "✅ Excluded packages list is valid with {{ package_update_excluded_packages_list | length }} packages"
+  when: >
+    package_update_excluded_packages_list is defined
 
 # -----------------------------------------------------------------------------
 # 3. Logging Settings Validation
 # -----------------------------------------------------------------------------
-- name: Package-Update | assert | Validate logging settings
+- name: 🧪 Package-Update | assert | Validate log upgradable packages setting
   ansible.builtin.assert:
     that:
       - package_update_log_upgradable_packages is defined
       - package_update_log_upgradable_packages is boolean
+    fail_msg: "❌ Invalid log upgradable packages setting '{{ package_update_log_upgradable_packages | default('undefined') }}'. Must be boolean (true/false)"
+    success_msg: "✅ Log upgradable packages setting is valid: {{ package_update_log_upgradable_packages }}"
+
+- name: 🧪 Package-Update | assert | Validate log directory path
+  ansible.builtin.assert:
+    that:
       - package_update_log_directory is defined
       - package_update_log_directory is string
+      - package_update_log_directory | length > 0
+      - package_update_log_directory is search('^/')
+    fail_msg: "❌ Invalid log directory '{{ package_update_log_directory | default('undefined') }}'. Must be a non-empty absolute path"
+    success_msg: "✅ Log directory path is valid: {{ package_update_log_directory }}"
+
+- name: 🧪 Package-Update | assert | Validate log file name
+  ansible.builtin.assert:
+    that:
       - package_update_log_file_name is defined
       - package_update_log_file_name is string
-    quiet: true
+      - package_update_log_file_name | length > 0
+      - package_update_log_file_name is search('^[a-zA-Z0-9_.-]+$')
+    fail_msg: "❌ Invalid log file name '{{ package_update_log_file_name | default('undefined') }}'. Must contain only letters, numbers, dots, hyphens, and underscores"
+    success_msg: "✅ Log file name is valid: {{ package_update_log_file_name }}"
 
 # -----------------------------------------------------------------------------
 # 4. Disk Space Verification Settings
 # -----------------------------------------------------------------------------
-- name: Package-Update | assert | Validate disk space check settings
+- name: 🧪 Package-Update | assert | Validate disk space check enabled setting
   ansible.builtin.assert:
     that:
       - package_update_disk_space_check_enabled is defined
       - package_update_disk_space_check_enabled is boolean
+    fail_msg: "❌ Invalid disk space check enabled setting '{{ package_update_disk_space_check_enabled | default('undefined') }}'. Must be boolean (true/false)"
+    success_msg: "✅ Disk space check enabled setting is valid: {{ package_update_disk_space_check_enabled }}"
+
+- name: 🧪 Package-Update | assert | Validate minimum disk space requirement
+  ansible.builtin.assert:
+    that:
       - package_update_min_disk_space_mb is defined
       - package_update_min_disk_space_mb | int >= 0
+      - package_update_min_disk_space_mb | int <= 1048576
+    fail_msg: "❌ Invalid minimum disk space '{{ package_update_min_disk_space_mb | default('undefined') }}'. Must be between 0 and 1048576 MB (1TB)"
+    success_msg: "✅ Minimum disk space requirement is valid: {{ package_update_min_disk_space_mb }} MB"
+
+- name: 🧪 Package-Update | assert | Validate abort on disk space error setting
+  ansible.builtin.assert:
+    that:
       - package_update_abort_on_disk_space_error is defined
       - package_update_abort_on_disk_space_error is boolean
-    quiet: true
+    fail_msg: "❌ Invalid abort on disk space error setting '{{ package_update_abort_on_disk_space_error | default('undefined') }}'. Must be boolean (true/false)"
+    success_msg: "✅ Abort on disk space error setting is valid: {{ package_update_abort_on_disk_space_error }}"
 
-- name: Package-Update | assert | Validate disk check paths
+- name: 🧪 Package-Update | assert | Validate disk check paths (if defined)
   ansible.builtin.assert:
     that:
       - package_update_disk_check_paths is sequence
-    quiet: true
-  when:
-    - package_update_disk_check_paths is defined
+      - package_update_disk_check_paths | length > 0
+    fail_msg: "❌ Invalid disk check paths. Must be a non-empty sequence/list of paths"
+    success_msg: "✅ Disk check paths are valid with {{ package_update_disk_check_paths | length }} paths"
+  when: >
+    package_update_disk_check_paths is defined
 
 # -----------------------------------------------------------------------------
 # 5. Reboot Settings Validation (Optional)
@@ -107,66 +149,85 @@
 # Note: The reboot variables use the default_ prefix in reboot.yml
 # These variables are optional and will default to values in reboot.yml if not provided
 
-- name: Package-Update | assert | Validate reboot message (if defined)
+- name: 🧪 Package-Update | assert | Validate reboot message (if defined)
   ansible.builtin.assert:
     that:
       - default_reboot_message is string
-    quiet: true
-  when:
-    - default_reboot_message is defined
+      - default_reboot_message | length > 0
+    fail_msg: "❌ Invalid reboot message '{{ default_reboot_message | default('undefined') }}'. Must be a non-empty string"
+    success_msg: "✅ Reboot message is valid: {{ default_reboot_message }}"
+  when: >
+    default_reboot_message is defined
 
-- name: Package-Update | assert | Validate reboot wait settings (if defined)
+- name: 🧪 Package-Update | assert | Validate reboot wait setting (if defined)
   ansible.builtin.assert:
     that:
       - default_reboot_wait is boolean
-    quiet: true
-  when:
-    - default_reboot_wait is defined
+    fail_msg: "❌ Invalid reboot wait setting '{{ default_reboot_wait | default('undefined') }}'. Must be boolean (true/false)"
+    success_msg: "✅ Reboot wait setting is valid: {{ default_reboot_wait }}"
+  when: >
+    default_reboot_wait is defined
 
-- name: Package-Update | assert | Validate reboot connect timeout (if defined)
+- name: 🧪 Package-Update | assert | Validate reboot connect timeout (if defined)
   ansible.builtin.assert:
     that:
       - default_reboot_connect_timeout | string | regex_search('^[0-9]+$')
-    quiet: true
-  when:
-    - default_reboot_connect_timeout is defined
+      - default_reboot_connect_timeout | int > 0
+      - default_reboot_connect_timeout | int <= 3600
+    fail_msg: "❌ Invalid reboot connect timeout '{{ default_reboot_connect_timeout | default('undefined') }}'. Must be a positive integer between 1 and 3600 seconds"
+    success_msg: "✅ Reboot connect timeout is valid: {{ default_reboot_connect_timeout }} seconds"
+  when: >
+    default_reboot_connect_timeout is defined
 
-- name: Package-Update | assert | Validate reboot wait sleep (if defined)
+- name: 🧪 Package-Update | assert | Validate reboot wait sleep timeout (if defined)
   ansible.builtin.assert:
     that:
       - default_reboot_wait_ctimeout | string | regex_search('^[0-9]+$')
-    quiet: true
-  when:
-    - default_reboot_wait_ctimeout is defined
+      - default_reboot_wait_ctimeout | int > 0
+      - default_reboot_wait_ctimeout | int <= 3600
+    fail_msg: "❌ Invalid reboot wait sleep timeout '{{ default_reboot_wait_ctimeout | default('undefined') }}'. Must be a positive integer between 1 and 3600 seconds"
+    success_msg: "✅ Reboot wait sleep timeout is valid: {{ default_reboot_wait_ctimeout }} seconds"
+  when: >
+    default_reboot_wait_ctimeout is defined
 
-- name: Package-Update | assert | Validate reboot wait delay (if defined)
+- name: 🧪 Package-Update | assert | Validate reboot wait delay (if defined)
   ansible.builtin.assert:
     that:
       - default_reboot_wait_delay | string | regex_search('^[0-9]+$')
-    quiet: true
-  when:
-    - default_reboot_wait_delay is defined
+      - default_reboot_wait_delay | int >= 0
+      - default_reboot_wait_delay | int <= 600
+    fail_msg: "❌ Invalid reboot wait delay '{{ default_reboot_wait_delay | default('undefined') }}'. Must be an integer between 0 and 600 seconds"
+    success_msg: "✅ Reboot wait delay is valid: {{ default_reboot_wait_delay }} seconds"
+  when: >
+    default_reboot_wait_delay is defined
 
-- name: Package-Update | assert | Validate reboot wait timeout (if defined)
+- name: 🧪 Package-Update | assert | Validate reboot wait timeout (if defined)
   ansible.builtin.assert:
     that:
       - default_reboot_wait_timeout | string | regex_search('^[0-9]+$')
-    quiet: true
-  when:
-    - default_reboot_wait_timeout is defined
+      - default_reboot_wait_timeout | int > 0
+      - default_reboot_wait_timeout | int <= 7200
+    fail_msg: "❌ Invalid reboot wait timeout '{{ default_reboot_wait_timeout | default('undefined') }}'. Must be a positive integer between 1 and 7200 seconds"
+    success_msg: "✅ Reboot wait timeout is valid: {{ default_reboot_wait_timeout }} seconds"
+  when: >
+    default_reboot_wait_timeout is defined
 
-- name: Package-Update | assert | Validate reboot interval (if defined)
+- name: 🧪 Package-Update | assert | Validate reboot interval setting (if defined)
   ansible.builtin.assert:
     that:
       - default_reboot_interval is boolean
-    quiet: true
-  when:
-    - default_reboot_interval is defined
+    fail_msg: "❌ Invalid reboot interval setting '{{ default_reboot_interval | default('undefined') }}'. Must be boolean (true/false)"
+    success_msg: "✅ Reboot interval setting is valid: {{ default_reboot_interval }}"
+  when: >
+    default_reboot_interval is defined
 
-- name: Package-Update | assert | Validate reboot interval seconds (if defined)
+- name: 🧪 Package-Update | assert | Validate reboot interval seconds (if defined)
   ansible.builtin.assert:
     that:
       - default_reboot_interval_seconds | string | regex_search('^[0-9]+$')
-    quiet: true
-  when:
-    - default_reboot_interval_seconds is defined
+      - default_reboot_interval_seconds | int > 0
+      - default_reboot_interval_seconds | int <= 3600
+    fail_msg: "❌ Invalid reboot interval seconds '{{ default_reboot_interval_seconds | default('undefined') }}'. Must be a positive integer between 1 and 3600 seconds"
+    success_msg: "✅ Reboot interval seconds is valid: {{ default_reboot_interval_seconds }} seconds"
+  when: >
+    default_reboot_interval_seconds is defined

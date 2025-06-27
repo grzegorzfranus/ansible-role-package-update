@@ -13,13 +13,13 @@
 # -----------------------------------------------------------------------------
 # 1. Gather System Facts
 # -----------------------------------------------------------------------------
-- name: Package-Update | pre_info | Gather package facts
+- name: 📊 Package-Update | pre_info | Gather package facts
   become: true
   ansible.builtin.package_facts:
     manager: auto
   no_log: true
 
-- name: Package-Update | pre_info | Gather service facts
+- name: 📊 Package-Update | pre_info | Gather service facts
   become: true
   ansible.builtin.service_facts:
   no_log: true
@@ -27,7 +27,7 @@
 # -----------------------------------------------------------------------------
 # 2. Record Running Services
 # -----------------------------------------------------------------------------
-- name: Package-Update | pre_info | Record currently running services
+- name: 🧪 Package-Update | pre_info | Record currently running services
   ansible.builtin.set_fact:
     _pre_running_services_: "{{ ansible_facts.services | dict2items
       | selectattr('value.state', '==', 'running') | map(attribute='key') }}"
@@ -35,7 +35,7 @@
 # -----------------------------------------------------------------------------
 # 3. Log System Information
 # -----------------------------------------------------------------------------
-- name: Package-Update | pre_info | Log information to remote system
+- name: 📝 Package-Update | pre_info | Log information to remote system
   become: true
   ansible.builtin.template:
     src: "{{ item.source }}"
@@ -44,7 +44,7 @@
     - { source: 'templates/system_info.j2', destination: '{{ package_update_log_directory }}/{{ package_update_log_file_name }}_pre-system-info' }
     - { source: 'templates/pre_services_info.j2', destination: '{{ package_update_log_directory }}/{{ package_update_log_file_name }}_pre-running-services' }
 
-- name: Package-Update | pre_info | Log information to local system
+- name: 📝 Package-Update | pre_info | Log information to local system
   delegate_to: localhost
   become: false
   ansible.builtin.template:
