@@ -67,5 +67,4 @@
     package_update_reboot_timeout: 600
 
   roles:
-    # Use the local role when running in this repository; allow override via env var
-    - role: "{{ lookup('env','MOLECULE_ROLE_NAME') | default(lookup('env','MOLECULE_PROJECT_DIRECTORY') | basename, true) }}"
+    - role: grzegorzfranus.package_update
