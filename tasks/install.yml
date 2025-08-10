@@ -33,6 +33,7 @@
           ansible.builtin.apt:
             name: "*"
             state: latest
+            dpkg_options: 'force-confdef,force-confold'
           async: 3600
           poll: 10
           when: >
@@ -71,6 +72,7 @@
           ansible.builtin.apt:
             name: "*"
             state: latest
+            dpkg_options: 'force-confdef,force-confold'
           async: 3600
           poll: 10
           when: >
@@ -171,6 +173,7 @@
       ansible.builtin.apt:
         name: "{{ package_update_include_packages_list }}"
         state: latest
+        dpkg_options: 'force-confdef,force-confold'
       async: 3600
       poll: 10
       when: >

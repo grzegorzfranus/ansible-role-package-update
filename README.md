@@ -41,8 +41,8 @@ List of officially supported operating systems:
 | Ubuntu | 22.04 (Jammy) | ![✓](https://img.shields.io/badge/✓-brightgreen.svg) |
 | Debian | 12 (Bookworm) | ![✓](https://img.shields.io/badge/✓-brightgreen.svg) |
 | Debian | 11 (Bullseye) | ![✓](https://img.shields.io/badge/✓-brightgreen.svg) |
-| Rocky Linux | 9 | ![✓](https://img.shields.io/badge/✓-brightgreen.svg) |
-| Oracle Linux | 9 | ![✓](https://img.shields.io/badge/✓-brightgreen.svg) |
+| Rocky Linux | 9.0 | ![✓](https://img.shields.io/badge/✓-brightgreen.svg) |
+| Oracle Linux | 9.0 | ![✓](https://img.shields.io/badge/✓-brightgreen.svg) |
 
 ### Ansible version
 
@@ -86,7 +86,7 @@ This role already handles privilege escalation for tasks that require it. You ca
 |----------|-------------|---------|
 | `package_update_log_upgradable_packages` | Enable logging of available packages and system changes | `true` |
 | `package_update_log_directory` | Directory path where logs will be stored | `"/var/log/package-update"` |
-| `package_update_log_file_name` | Base filename for log files | `"package-update"` |
+| `package_update_log_file_name` | Base filename for log files (overridden by OS vars to include hostname + timestamp) | `"<hostname>_<YYYY-MM-DD>_<HH-MM-SS>"` |
 
 ### 4. Disk Space Verification Settings
 
@@ -368,7 +368,6 @@ ansible-role-package-update/
     ├── main.yml             # Internal role variables and constants
     ├── debian.yml           # Debian-specific variables
     ├── redhat.yml           # RedHat-specific variables
-    └── ubuntu.yml           # Ubuntu-specific variables
 ```
 
 ## 🏷️ Tags

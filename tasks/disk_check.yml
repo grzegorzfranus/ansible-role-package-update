@@ -15,7 +15,11 @@
 # -----------------------------------------------------------------------------
 - name: 💾 Package-Update | disk_check | Check available disk space
   become: true
-  ansible.builtin.shell: df -B1M {{ item }} | awk 'NR==2 {print $4}'
+  ansible.builtin.shell: |
+    set -o pipefail
+    df -B1M {{ item }} | awk 'NR==2 {print $4}'
+  args:
+    executable: /bin/bash
   register: disk_space_result
   changed_when: false
   loop: "{{ package_update_disk_check_paths }}"

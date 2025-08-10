@@ -14,30 +14,16 @@ galaxy_info:
       versions:
         - "bookworm"
         - "bullseye"
-      galaxy_tags:
-        - debian
-        - debian12
-        - debian11
     - name: Ubuntu
       versions:
         - "noble"
         - "jammy"
-      galaxy_tags:
-        - ubuntu
-        - ubuntu24
-        - ubuntu22
     - name: Rocky
       versions:
         - "9.0"
-      galaxy_tags:
-        - rocky
-        - rocky9
     - name: OracleLinux
       versions:
         - "9.0"
-      galaxy_tags:
-        - oracle
-        - oracle9
 
   galaxy_tags:
     - package

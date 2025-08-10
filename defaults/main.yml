@@ -13,6 +13,7 @@
 #   2. Package Management Settings
 #   3. Logging Settings
 #   4. Disk Space Verification Settings
+#   5. Reboot Settings (Optional)
 # =============================================================================
 
 # -----------------------------------------------------------------------------
@@ -81,3 +82,33 @@ package_update_disk_check_paths:
 
 # Abort update if disk space requirements are not met
 package_update_abort_on_disk_space_error: true
+
+# -----------------------------------------------------------------------------
+# 5. Reboot Settings (Optional)
+# -----------------------------------------------------------------------------
+# Configure reboot behavior after updates. These values are used by reboot.yml
+# and can be overridden in inventory or playbooks.
+
+# Message to display during reboot
+default_reboot_message: "Reboot initialized by Ansible"
+
+# Whether to wait for the system to become available after reboot
+default_reboot_wait: true
+
+# Connection timeout for reboot verification (seconds)
+default_reboot_connect_timeout: 60
+
+# Sleep time between connection attempts (seconds)
+default_reboot_wait_ctimeout: 5
+
+# Delay before attempting reconnection (seconds)
+default_reboot_wait_delay: 10
+
+# Maximum time to wait for reconnection (seconds)
+default_reboot_wait_timeout: 300
+
+# Whether to pause after the reboot before continuing
+default_reboot_interval: true
+
+# Seconds to pause after reboot before continuing tasks
+default_reboot_interval_seconds: 10

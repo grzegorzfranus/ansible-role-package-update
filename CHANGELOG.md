@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.0.3] - 2025-08-10
+
+### Changed 🔄
+- Switched reboot flow to `ansible.builtin.reboot` with existing variables for safer, idempotent reboots
+- Updated RedHat prerequisite from `dnf-utils` to `dnf-plugins-core`
+- Added `dpkg_options: 'force-confdef,force-confold'` to apt upgrade tasks for non-interactive runs across all modes
+- Hardened disk space check with `set -o pipefail` and `executable: /bin/bash`
+
+### Fixed 🔧
+- Corrected Galaxy name and examples in README to `grzegorzfranus.package_update`
+- Standardized Molecule to use local role by default with env override
+- Removed invalid per-platform `galaxy_tags` from `meta/main.yml`; kept top-level tags only
+- Platform versions in meta now use `9` for Rocky/Oracle to align with README
+- README file structure note clarified about `vars/ubuntu.yml`
+
 ## [1.0.2] - 2025-06-26
 
 ### Fixed 🔧

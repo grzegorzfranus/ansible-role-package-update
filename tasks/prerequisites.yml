@@ -16,7 +16,7 @@
 - name: 📦 Package-Update | prerequisites | Install dnf-utils package (RedHat)
   become: true
   ansible.builtin.package:
-    name: dnf-utils
+    name: dnf-plugins-core
     state: present
   when: >
     ansible_os_family | lower == "redhat" and
