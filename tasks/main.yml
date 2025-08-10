@@ -140,7 +140,7 @@
     # -----------------------------------------------------------------------------
     - name: 🔍 Package-Update | main | Check if system needs reboot (RedHat)
       become: true
-      ansible.builtin.command: "needs-restarting -r"
+      ansible.builtin.command: "dnf -q needs-restarting -r"
       register: _reboot_required_redhat_
       changed_when: _reboot_required_redhat_.rc == 1
       failed_when: _reboot_required_redhat_.rc != 0 and _reboot_required_redhat_.rc != 1
@@ -163,7 +163,7 @@
 
     - name: 🔍 Package-Update | main | Check if services need reboot (RedHat)
       become: true
-      ansible.builtin.command: "needs-restarting -s"
+      ansible.builtin.command: "dnf -q needs-restarting -s"
       register: _reboot_required_services_redhat_
       changed_when: _reboot_required_services_redhat_.rc == 1
       failed_when: _reboot_required_services_redhat_.rc != 0 and _reboot_required_services_redhat_.rc != 1
