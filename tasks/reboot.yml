@@ -17,10 +17,10 @@
   become: true
   ansible.builtin.reboot:
     msg: "{{ default_reboot_message | default('Reboot initialized by Ansible') }}"
-    connect_timeout: {{ default_reboot_connect_timeout | default('60') | int }}
-    reboot_timeout: {{ default_reboot_wait_timeout | default('300') | int }}
-    pre_reboot_delay: {{ default_reboot_wait_delay | default('10') | int }}
-    post_reboot_delay: {{ (default_reboot_interval | default(true)) | ternary(default_reboot_interval_seconds | default('10'), 0) | int }}
+    connect_timeout: "{{ default_reboot_connect_timeout | default('60') | int }}"
+    reboot_timeout: "{{ default_reboot_wait_timeout | default('300') | int }}"
+    pre_reboot_delay: "{{ default_reboot_wait_delay | default('10') | int }}"
+    post_reboot_delay: "{{ (default_reboot_interval | default(true)) | ternary(default_reboot_interval_seconds | default('10'), 0) | int }}"
   register: _reboot_result_
   when: >
     default_reboot_wait | default(true)

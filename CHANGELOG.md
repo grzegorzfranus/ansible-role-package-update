@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.4] - 2025-08-10
+
+### Fixed 🔧
+- Quoted Jinja expressions in `tasks/reboot.yml` module arguments (`connect_timeout`, `reboot_timeout`, `pre_reboot_delay`, `post_reboot_delay`) to fix YAML parsing error during reboot task.
+
 ## [1.0.3] - 2025-08-10
 
 ### Changed 🔄
