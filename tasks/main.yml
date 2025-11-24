@@ -145,7 +145,7 @@
       changed_when: _reboot_required_redhat_.rc == 1
       failed_when: _reboot_required_redhat_.rc != 0 and _reboot_required_redhat_.rc != 1
       when: >
-        ansible_os_family | lower == "redhat"
+        ansible_facts['os_family'] | lower == "redhat"
       tags:
         - always
         - reboot_check
@@ -156,7 +156,7 @@
         path: "/var/run/reboot-required"
       register: _reboot_required_debian_
       when: >
-        ansible_os_family | lower == "debian"
+        ansible_facts['os_family'] | lower == "debian"
       tags:
         - always
         - reboot_check
@@ -168,7 +168,7 @@
       changed_when: _reboot_required_services_redhat_.rc == 1
       failed_when: _reboot_required_services_redhat_.rc != 0 and _reboot_required_services_redhat_.rc != 1
       when: >
-        ansible_os_family | lower == "redhat"
+        ansible_facts['os_family'] | lower == "redhat"
       tags:
         - always
         - reboot_check
@@ -179,7 +179,7 @@
         path: "/var/run/reboot-required.pkgs"
       register: _reboot_required_services_debian
       when: >
-        ansible_os_family | lower == "debian"
+        ansible_facts['os_family'] | lower == "debian"
       tags:
         - always
         - reboot_check
@@ -190,8 +190,8 @@
     - name: 🔄 Package-Update | main | Reboot system if required (RedHat)
       ansible.builtin.include_tasks: reboot.yml
       when: >
-        ( ansible_os_family | lower == "redhat" and _reboot_required_redhat_.rc == 1 ) or
-        ( ansible_os_family | lower == "redhat" and _reboot_required_services_redhat_.rc == 1 )
+        ( ansible_facts['os_family'] | lower == "redhat" and _reboot_required_redhat_.rc == 1 ) or
+        ( ansible_facts['os_family'] | lower == "redhat" and _reboot_required_services_redhat_.rc == 1 )
       tags:
         - always
         - reboot
@@ -199,8 +199,8 @@
     - name: 🔄 Package-Update | main | Reboot system if required (Debian)
       ansible.builtin.include_tasks: reboot.yml
       when: >
-        ( ansible_os_family | lower == "debian" and _reboot_required_debian_.stat.exists ) or
-        ( ansible_os_family | lower == "debian" and _reboot_required_services_debian.stat.exists )
+        ( ansible_facts['os_family'] | lower == "debian" and _reboot_required_debian_.stat.exists ) or
+        ( ansible_facts['os_family'] | lower == "debian" and _reboot_required_services_debian.stat.exists )
       tags:
         - always
         - reboot

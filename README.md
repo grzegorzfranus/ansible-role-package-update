@@ -46,7 +46,7 @@ List of officially supported operating systems:
 
 ### Ansible version
 
-Ansible >= 2.15
+Ansible >= 2.15 (tested with Ansible 2.20)
 
 ### Python version
 

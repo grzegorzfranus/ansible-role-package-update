@@ -179,7 +179,7 @@
 - name: 🧪 Package-Update | assert | Validate reboot connect timeout (if defined)
   ansible.builtin.assert:
     that:
-      - default_reboot_connect_timeout | string | regex_search('^[0-9]+$')
+      - default_reboot_connect_timeout | string is search('^[0-9]+$')
       - default_reboot_connect_timeout | int > 0
       - default_reboot_connect_timeout | int <= 3600
     fail_msg: "❌ Invalid reboot connect timeout '{{ default_reboot_connect_timeout | default('undefined') }}'. Must be a positive integer between 1 and 3600 seconds"
@@ -190,7 +190,7 @@
 - name: 🧪 Package-Update | assert | Validate reboot wait sleep timeout (if defined)
   ansible.builtin.assert:
     that:
-      - default_reboot_wait_ctimeout | string | regex_search('^[0-9]+$')
+      - default_reboot_wait_ctimeout | string is search('^[0-9]+$')
       - default_reboot_wait_ctimeout | int > 0
       - default_reboot_wait_ctimeout | int <= 3600
     fail_msg: "❌ Invalid reboot wait sleep timeout '{{ default_reboot_wait_ctimeout | default('undefined') }}'. Must be a positive integer between 1 and 3600 seconds"
@@ -201,7 +201,7 @@
 - name: 🧪 Package-Update | assert | Validate reboot wait delay (if defined)
   ansible.builtin.assert:
     that:
-      - default_reboot_wait_delay | string | regex_search('^[0-9]+$')
+      - default_reboot_wait_delay | string is search('^[0-9]+$')
       - default_reboot_wait_delay | int >= 0
       - default_reboot_wait_delay | int <= 600
     fail_msg: "❌ Invalid reboot wait delay '{{ default_reboot_wait_delay | default('undefined') }}'. Must be an integer between 0 and 600 seconds"
@@ -212,7 +212,7 @@
 - name: 🧪 Package-Update | assert | Validate reboot wait timeout (if defined)
   ansible.builtin.assert:
     that:
-      - default_reboot_wait_timeout | string | regex_search('^[0-9]+$')
+      - default_reboot_wait_timeout | string is search('^[0-9]+$')
       - default_reboot_wait_timeout | int > 0
       - default_reboot_wait_timeout | int <= 7200
     fail_msg: "❌ Invalid reboot wait timeout '{{ default_reboot_wait_timeout | default('undefined') }}'. Must be a positive integer between 1 and 7200 seconds"
@@ -232,7 +232,7 @@
 - name: 🧪 Package-Update | assert | Validate reboot interval seconds (if defined)
   ansible.builtin.assert:
     that:
-      - default_reboot_interval_seconds | string | regex_search('^[0-9]+$')
+      - default_reboot_interval_seconds | string is search('^[0-9]+$')
       - default_reboot_interval_seconds | int > 0
       - default_reboot_interval_seconds | int <= 3600
     fail_msg: "❌ Invalid reboot interval seconds '{{ default_reboot_interval_seconds | default('undefined') }}'. Must be a positive integer between 1 and 3600 seconds"

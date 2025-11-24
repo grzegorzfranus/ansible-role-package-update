@@ -25,8 +25,8 @@
           async: 3600
           poll: 10
           when: >
-            ansible_os_family | lower == "redhat" and
-            ansible_pkg_mgr == "dnf"
+            ansible_facts['os_family'] | lower == "redhat" and
+            ansible_facts['pkg_mgr'] == "dnf"
 
         - name: Package-Update | install | Upgrade all packages with apt
           become: true
@@ -37,8 +37,8 @@
           async: 3600
           poll: 10
           when: >
-            ansible_os_family | lower == "debian" and
-            ansible_pkg_mgr == "apt"
+            ansible_facts['os_family'] | lower == "debian" and
+            ansible_facts['pkg_mgr'] == "apt"
       when: >
         package_update_excluded_packages_list is undefined or
         ( package_update_excluded_packages_list is defined and package_update_excluded_packages_list | length == 0 )
@@ -54,8 +54,8 @@
           async: 3600
           poll: 10
           when: >
-            ansible_os_family | lower == "redhat" and
-            ansible_pkg_mgr == "dnf"
+            ansible_facts['os_family'] | lower == "redhat" and
+            ansible_facts['pkg_mgr'] == "dnf"
 
         - name: Package-Update | install | Mark excluded packages (Debian)
           become: true
@@ -64,8 +64,8 @@
             selection: hold
           loop: "{{ package_update_excluded_packages_list }}"
           when: >
-            ansible_os_family | lower == "debian" and
-            ansible_pkg_mgr == "apt"
+            ansible_facts['os_family'] | lower == "debian" and
+            ansible_facts['pkg_mgr'] == "apt"
 
         - name: Package-Update | install | Upgrade all packages with exclusions (Debian)
           become: true
@@ -76,8 +76,8 @@
           async: 3600
           poll: 10
           when: >
-            ansible_os_family | lower == "debian" and
-            ansible_pkg_mgr == "apt"
+            ansible_facts['os_family'] | lower == "debian" and
+            ansible_facts['pkg_mgr'] == "apt"
 
         - name: Package-Update | install | Unmark excluded packages (Debian)
           become: true
@@ -86,8 +86,8 @@
             selection: install
           loop: "{{ package_update_excluded_packages_list }}"
           when: >
-            ansible_os_family | lower == "debian" and
-            ansible_pkg_mgr == "apt"
+            ansible_facts['os_family'] | lower == "debian" and
+            ansible_facts['pkg_mgr'] == "apt"
       when: >
         package_update_excluded_packages_list is defined and
         package_update_excluded_packages_list | length > 0
@@ -109,8 +109,8 @@
       async: 3600
       poll: 10
       when: >
-        ansible_os_family | lower == "redhat" and
-        ansible_pkg_mgr == "dnf"
+        ansible_facts['os_family'] | lower == "redhat" and
+        ansible_facts['pkg_mgr'] == "dnf"
 
     - name: Package-Update | install | Update security packages only (Debian)
       become: true
@@ -133,8 +133,8 @@
             # will keep any existing config file and not prompt for input
             dpkg_options: 'force-confdef,force-confold'
             # Only install security updates
-            only_upgrade: '{{ (ansible_distribution_version is version("18.04", ">=")) | ternary("yes", omit) }}'
-            default_release: '{{ ansible_distribution_release }}-security'
+            only_upgrade: '{{ (ansible_facts["distribution_version"] is version("18.04", ">=")) | ternary("yes", omit) }}'
+            default_release: '{{ ansible_facts["distribution_release"] }}-security'
           async: 3600
           poll: 10
 
@@ -147,8 +147,8 @@
             package_update_excluded_packages_list is defined and
             package_update_excluded_packages_list | length > 0
       when: >
-        ansible_os_family | lower == "debian" and
-        ansible_pkg_mgr == "apt"
+        ansible_facts['os_family'] | lower == "debian" and
+        ansible_facts['pkg_mgr'] == "apt"
   when: >
     package_update_mode == "security"
 
@@ -165,8 +165,8 @@
       async: 3600
       poll: 10
       when: >
-        ansible_os_family | lower == "redhat" and
-        ansible_pkg_mgr == "dnf"
+        ansible_facts['os_family'] | lower == "redhat" and
+        ansible_facts['pkg_mgr'] == "dnf"
 
     - name: Package-Update | install | Upgrade selected packages (Debian)
       become: true
@@ -177,8 +177,8 @@
       async: 3600
       poll: 10
       when: >
-        ansible_os_family | lower == "debian" and
-        ansible_pkg_mgr == "apt"
+        ansible_facts['os_family'] | lower == "debian" and
+        ansible_facts['pkg_mgr'] == "apt"
   when: >
     package_update_mode == "selected" and
     package_update_include_packages_list is defined and

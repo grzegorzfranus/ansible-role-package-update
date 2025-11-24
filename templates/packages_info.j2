@@ -2,6 +2,6 @@
 # =============================================================================
 # Package Update Report: Available Package Updates
 # =============================================================================
-# Report time: {{ ansible_date_time.iso8601 }}
+# Report time: {{ ansible_facts['date_time']['iso8601'] }}
 
 {{ _update_check_result_.stdout_lines | to_nice_json }}

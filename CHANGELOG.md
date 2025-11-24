@@ -5,6 +5,48 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.5] - 2025-11-24
+
+### Fixed 🔧
+- Updated variable validation in `tasks/assert.yml` for Ansible 2.20 compatibility
+- Replaced `regex_search()` filter with `is search()` test in reboot timeout validations
+- Fixed boolean conditional requirements for:
+  - `default_reboot_connect_timeout`
+  - `default_reboot_wait_ctimeout`
+  - `default_reboot_wait_delay`
+  - `default_reboot_wait_timeout`
+  - `default_reboot_interval_seconds`
+- Replaced deprecated `ansible_*` variables with `ansible_facts['*']` format across all tasks
+- Updated `ansible_os_family` to `ansible_facts['os_family']` in:
+  - `tasks/main.yml` - reboot check conditionals
+  - `tasks/install.yml` - package installation conditionals
+  - `tasks/check.yml` - update check conditionals
+  - `tasks/prerequisites.yml` - prerequisite installation conditionals
+- Updated `ansible_pkg_mgr` to `ansible_facts['pkg_mgr']` in:
+  - `tasks/install.yml` - package manager detection
+  - `tasks/check.yml` - cache update conditionals
+  - `tasks/prerequisites.yml` - prerequisite installation conditionals
+- Updated `ansible_distribution_version` to `ansible_facts["distribution_version"]` in:
+  - `tasks/install.yml` - security update logic for Debian/Ubuntu
+- Updated `ansible_distribution_release` to `ansible_facts["distribution_release"]` in:
+  - `tasks/install.yml` - security repository selection
+  - `templates/system_info.j2` - system information reporting
+- Updated all `ansible_*` fact variables to `ansible_facts['*']` format in:
+  - `vars/main.yml` - log file naming (hostname, date_time)
+  - `templates/system_info.j2` - system information template (hostname, kernel, distribution, date_time, cmdline)
+  - `templates/pre_services_info.j2` - pre-update services report (date_time)
+  - `templates/post_services_info.j2` - post-update services report (date_time)
+  - `templates/packages_info.j2` - available packages report (date_time)
+  - `templates/faulty_services.j2` - faulty services report (date_time)
+  - `molecule/default/converge.yml` - test convergence playbook (os_family, service_mgr)
+  - `molecule/default/verify.yml` - test verification playbook (os_family)
+
+### Enhanced ✅
+- Improved compatibility with Ansible 2.20 strict boolean conditional enforcement
+- Eliminated all `INJECT_FACTS_AS_VARS` deprecation warnings
+- Modernized fact variable usage to follow Ansible 2.20+ best practices
+- Updated all templates and test files to use modern ansible_facts dictionary format
+
 ## [1.0.4] - 2025-08-10
 
 ### Fixed 🔧

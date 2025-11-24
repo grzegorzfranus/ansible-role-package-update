@@ -2,21 +2,21 @@
 # =============================================================================
 # Package Update Report: System Information
 # =============================================================================
-# Report time: {{ ansible_date_time.iso8601 }}
+# Report time: {{ ansible_facts['date_time']['iso8601'] }}
 
 # -----------------------------------------------------------------------------
 # System Details
 # -----------------------------------------------------------------------------
-Hostname: {{ ansible_hostname | default('N/A') }}
+Hostname: {{ ansible_facts['hostname'] | default('N/A') }}
 
-BOOT image: {{ ansible_cmdline.BOOT_IMAGE | default('N/A') }}
-Kernel: {{ ansible_kernel | default('N/A') }}
+BOOT image: {{ ansible_facts['cmdline']['BOOT_IMAGE'] | default('N/A') }}
+Kernel: {{ ansible_facts['kernel'] | default('N/A') }}
 
-OS family: {{ ansible_os_family | default('N/A') }}
-OS distribution: {{ ansible_distribution | default('N/A') }}
-OS distribution release: {{ ansible_distribution_release | default('N/A') }}
-OS distribution version: {{ ansible_distribution_version | default('N/A') }}
-OS distribution major version: {{ ansible_distribution_major_version | default('N/A') }}
+OS family: {{ ansible_facts['os_family'] | default('N/A') }}
+OS distribution: {{ ansible_facts['distribution'] | default('N/A') }}
+OS distribution release: {{ ansible_facts['distribution_release'] | default('N/A') }}
+OS distribution version: {{ ansible_facts['distribution_version'] | default('N/A') }}
+OS distribution major version: {{ ansible_facts['distribution_major_version'] | default('N/A') }}
 
 # -----------------------------------------------------------------------------
 # Installed Packages

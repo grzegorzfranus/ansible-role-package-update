@@ -2,6 +2,6 @@
 # =============================================================================
 # Package Update Report: Services Not Restarted After Update
 # =============================================================================
-# Report time: {{ ansible_date_time.iso8601 }}
+# Report time: {{ ansible_facts['date_time']['iso8601'] }}
 
 {{ _faulty_services_ | to_nice_json }}

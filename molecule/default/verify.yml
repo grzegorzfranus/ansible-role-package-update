@@ -55,7 +55,7 @@
       changed_when: false
       ignore_errors: true
       when: >
-        ansible_os_family == "Debian"
+        ansible_facts['os_family'] == "Debian"
 
     - name: Verify | Check dnf presence (RedHat)
       ansible.builtin.command:
@@ -64,11 +64,11 @@
       changed_when: false
       ignore_errors: true
       when: >
-        ansible_os_family == "RedHat"
+        ansible_facts['os_family'] == "RedHat"
 
     - name: Verify | Check package management tools availability
       ansible.builtin.debug:
-        msg: "Package manager available: {{ (ansible_os_family == 'Debian' and _apt_result_.rc == 0) or (ansible_os_family == 'RedHat' and _dnf_result_.rc == 0) }}"
+        msg: "Package manager available: {{ (ansible_facts['os_family'] == 'Debian' and _apt_result_.rc == 0) or (ansible_facts['os_family'] == 'RedHat' and _dnf_result_.rc == 0) }}"
 
     # -----------------------------------------------------------------------------
     # 3. Configuration Verification
@@ -81,7 +81,7 @@
         - /etc/apt/apt.conf.d/20auto-upgrades
       ignore_errors: true
       when: >
-        ansible_os_family == "Debian"
+        ansible_facts['os_family'] == "Debian"
 
     - name: Verify | Check if update configuration files exist (RedHat)
       ansible.builtin.stat:
@@ -91,14 +91,14 @@
         - /etc/dnf/automatic.conf
       ignore_errors: true
       when: >
-        ansible_os_family == "RedHat"
+        ansible_facts['os_family'] == "RedHat"
 
     # -----------------------------------------------------------------------------
     # 4. System Status Verification
     # -----------------------------------------------------------------------------
     - name: Verify | Check system update status
       ansible.builtin.command:
-        cmd: "{{ (ansible_os_family == 'Debian') | ternary('apt-get -s upgrade', 'dnf check-update') }}"
+        cmd: "{{ (ansible_facts['os_family'] == 'Debian') | ternary('apt-get -s upgrade', 'dnf check-update') }}"
       register: _update_status_
       changed_when: false
       ignore_errors: true
@@ -117,7 +117,7 @@
       changed_when: false
       ignore_errors: true
       when: >
-        ansible_os_family == "Debian"
+        ansible_facts['os_family'] == "Debian"
 
     - name: Verify | Check for orphaned packages (RedHat)
       ansible.builtin.command:
@@ -126,4 +126,4 @@
       changed_when: false
       ignore_errors: true
       when: >
-        ansible_os_family == "RedHat"
+        ansible_facts['os_family'] == "RedHat"

@@ -2,6 +2,6 @@
 # =============================================================================
 # Package Update Report: Pre-Update Running Services
 # =============================================================================
-# Report time: {{ ansible_date_time.iso8601 }}
+# Report time: {{ ansible_facts['date_time']['iso8601'] }}
 
 {{ _pre_running_services_ | to_nice_json }}

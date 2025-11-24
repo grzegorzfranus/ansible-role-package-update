@@ -19,16 +19,16 @@
   ansible.builtin.dnf:
     update_cache: true
   when: >
-    ansible_os_family | lower == "redhat" and
-    ansible_pkg_mgr == "dnf"
+    ansible_facts['os_family'] | lower == "redhat" and
+    ansible_facts['pkg_mgr'] == "dnf"
 
 - name: 🔄 Package-Update | check | Update package cache (Debian)
   become: true
   ansible.builtin.apt:
     update_cache: true
   when: >
-    ansible_os_family | lower == "debian" and
-    ansible_pkg_mgr == "apt"
+    ansible_facts['os_family'] | lower == "debian" and
+    ansible_facts['pkg_mgr'] == "apt"
 
 # -----------------------------------------------------------------------------
 # 2. Check for Available Updates
@@ -49,14 +49,14 @@
     package_update_availability: true
   when: >
     _update_check_result_.rc == 1 and
-    ansible_os_family | lower == "redhat"
+    ansible_facts['os_family'] | lower == "redhat"
 
 - name: 🧪 Package-Update | check | Set upgrade availability flag (Debian)
   ansible.builtin.set_fact:
     package_update_availability: true
   when: >
     _update_check_result_.stdout_lines | length > 1 and
-    ansible_os_family | lower == "debian"
+    ansible_facts['os_family'] | lower == "debian"
 
 # -----------------------------------------------------------------------------
 # 4. Display Available Packages (Optional)
@@ -67,7 +67,7 @@
   when: >
     package_update_display_upgradable_packages | default(false) and
     _update_check_result_.rc == 1 and
-    ansible_os_family | lower == "redhat"
+    ansible_facts['os_family'] | lower == "redhat"
 
 - name: 🔍 Package-Update | check | Display available packages (Debian)
   ansible.builtin.debug:
@@ -75,4 +75,4 @@
   when: >
     package_update_display_upgradable_packages | default(false) and
     _update_check_result_.stdout_lines | length > 1 and
-    ansible_os_family | lower == "debian"
+    ansible_facts['os_family'] | lower == "debian"
