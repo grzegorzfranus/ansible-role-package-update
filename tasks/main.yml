@@ -25,7 +25,7 @@
 # -----------------------------------------------------------------------------
 # 1. OS-Specific Variables
 # -----------------------------------------------------------------------------
-- name: 📂 Package-Update | main | Load OS-specific variables
+- name: Package-Update | main | Load OS-specific variables
   ansible.builtin.include_vars: "{{ lookup('first_found', params) }}"
   vars:
     params:
@@ -45,7 +45,7 @@
 # -----------------------------------------------------------------------------
 # 2. Variable Validation
 # -----------------------------------------------------------------------------
-- name: 🧪 Package-Update | main | Validate role variables and requirements
+- name: Package-Update | main | Validate role variables and requirements
   ansible.builtin.include_tasks: assert.yml
   tags:
     - always
@@ -54,7 +54,7 @@
 # -----------------------------------------------------------------------------
 # 3. Check for Available Updates
 # -----------------------------------------------------------------------------
-- name: 🔍 Package-Update | main | Check for available package updates
+- name: Package-Update | main | Check for available package updates
   ansible.builtin.include_tasks: check.yml
   when: >
     package_update_role_action in ['all', 'check']
@@ -70,7 +70,7 @@
     # -----------------------------------------------------------------------------
     # 4a. Check Prerequisites
     # -----------------------------------------------------------------------------
-    - name: 🛠️ Package-Update | main | Verify system prerequisites
+    - name: Package-Update | main | Verify system prerequisites
       ansible.builtin.include_tasks: prerequisites.yml
       tags:
         - always
@@ -79,7 +79,7 @@
     # -----------------------------------------------------------------------------
     # 4b. Verify Disk Space Requirements
     # -----------------------------------------------------------------------------
-    - name: 💾 Package-Update | main | Verify disk space requirements
+    - name: Package-Update | main | Verify disk space requirements
       ansible.builtin.include_tasks: disk_check.yml
       when: >
         package_update_disk_space_check_enabled | bool
@@ -90,7 +90,7 @@
     # -----------------------------------------------------------------------------
     # 4c. Log Packages to be Updated
     # -----------------------------------------------------------------------------
-    - name: 📝 Package-Update | main | Log list of packages to upgrade to remote system
+    - name: Package-Update | main | Log list of packages to upgrade to remote system
       become: true
       ansible.builtin.template:
         src: "{{ item.source }}"
@@ -103,7 +103,7 @@
         - always
         - logging
 
-    - name: 📝 Package-Update | main | Log list of packages to upgrade to local system
+    - name: Package-Update | main | Log list of packages to upgrade to local system
       delegate_to: localhost
       become: false
       ansible.builtin.template:
@@ -120,7 +120,7 @@
     # -----------------------------------------------------------------------------
     # 4d. Gather Pre-Update System Information
     # -----------------------------------------------------------------------------
-    - name: 📊 Package-Update | main | Gather pre-update system information
+    - name: Package-Update | main | Gather pre-update system information
       ansible.builtin.include_tasks: pre_info.yml
       tags:
         - always
@@ -129,7 +129,7 @@
     # -----------------------------------------------------------------------------
     # 4e. Install Package Updates
     # -----------------------------------------------------------------------------
-    - name: 📦 Package-Update | main | Install package updates
+    - name: Package-Update | main | Install package updates
       ansible.builtin.include_tasks: install.yml
       tags:
         - always
@@ -138,7 +138,7 @@
     # -----------------------------------------------------------------------------
     # 4f. Check if Reboot is Required
     # -----------------------------------------------------------------------------
-    - name: 🔍 Package-Update | main | Check if system needs reboot (RedHat)
+    - name: Package-Update | main | Check if system needs reboot (RedHat)
       become: true
       ansible.builtin.command: "dnf -q needs-restarting -r"
       register: _reboot_required_redhat_
@@ -150,7 +150,7 @@
         - always
         - reboot_check
 
-    - name: 🔍 Package-Update | main | Check if system needs reboot (Debian)
+    - name: Package-Update | main | Check if system needs reboot (Debian)
       become: true
       ansible.builtin.stat:
         path: "/var/run/reboot-required"
@@ -161,7 +161,7 @@
         - always
         - reboot_check
 
-    - name: 🔍 Package-Update | main | Check if services need reboot (RedHat)
+    - name: Package-Update | main | Check if services need reboot (RedHat)
       become: true
       ansible.builtin.command: "dnf -q needs-restarting -s"
       register: _reboot_required_services_redhat_
@@ -173,7 +173,7 @@
         - always
         - reboot_check
 
-    - name: 🔍 Package-Update | main | Check if services need reboot (Debian)
+    - name: Package-Update | main | Check if services need reboot (Debian)
       become: true
       ansible.builtin.stat:
         path: "/var/run/reboot-required.pkgs"
@@ -187,7 +187,7 @@
     # -----------------------------------------------------------------------------
     # 4g. Reboot System if Needed
     # -----------------------------------------------------------------------------
-    - name: 🔄 Package-Update | main | Reboot system if required (RedHat)
+    - name: Package-Update | main | Reboot system if required (RedHat)
       ansible.builtin.include_tasks: reboot.yml
       when: >
         ( ansible_facts['os_family'] | lower == "redhat" and _reboot_required_redhat_.rc == 1 ) or
@@ -196,7 +196,7 @@
         - always
         - reboot
 
-    - name: 🔄 Package-Update | main | Reboot system if required (Debian)
+    - name: Package-Update | main | Reboot system if required (Debian)
       ansible.builtin.include_tasks: reboot.yml
       when: >
         ( ansible_facts['os_family'] | lower == "debian" and _reboot_required_debian_.stat.exists ) or
@@ -208,7 +208,7 @@
     # -----------------------------------------------------------------------------
     # 4h. Gather Post-Update System Information
     # -----------------------------------------------------------------------------
-    - name: 📊 Package-Update | main | Gather post-update system information
+    - name: Package-Update | main | Gather post-update system information
       ansible.builtin.include_tasks: post_info.yml
       tags:
         - always
@@ -217,14 +217,14 @@
     # -----------------------------------------------------------------------------
     # 4i. Verify Service Status
     # -----------------------------------------------------------------------------
-    - name: 🧪 Package-Update | main | Check if all pre-update services are running
+    - name: Package-Update | main | Check if all pre-update services are running
       ansible.builtin.set_fact:
         _faulty_services_: "{{ _pre_running_services_ | difference(_post_running_services_) }}"
       tags:
         - always
         - service_check
 
-    - name: 🔍 Package-Update | main | Display stopped services after update
+    - name: Package-Update | main | Display stopped services after update
       ansible.builtin.debug:
         var: _faulty_services_
       when: >
@@ -234,7 +234,7 @@
         - always
         - service_check
 
-    - name: 📝 Package-Update | main | Log faulty services to remote system
+    - name: Package-Update | main | Log faulty services to remote system
       become: true
       ansible.builtin.template:
         src: "{{ item.source }}"
@@ -248,7 +248,7 @@
         - always
         - logging
 
-    - name: 📝 Package-Update | main | Log faulty services to local system
+    - name: Package-Update | main | Log faulty services to local system
       delegate_to: localhost
       become: false
       ansible.builtin.template:

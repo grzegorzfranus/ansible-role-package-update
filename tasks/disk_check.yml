@@ -13,7 +13,7 @@
 # -----------------------------------------------------------------------------
 # 1. Gather Disk Space Information
 # -----------------------------------------------------------------------------
-- name: 💾 Package-Update | disk_check | Check available disk space
+- name: Package-Update | disk_check | Check available disk space
   become: true
   ansible.builtin.shell: |
     set -o pipefail
@@ -29,7 +29,7 @@
 # -----------------------------------------------------------------------------
 # 2. Evaluate Available Space
 # -----------------------------------------------------------------------------
-- name: 🧪 Package-Update | disk_check | Set facts for path with insufficient space
+- name: Package-Update | disk_check | Set facts for path with insufficient space
   ansible.builtin.set_fact:
     disk_space_insufficient: "{{ disk_space_insufficient | default([]) + [{'path': item.item, 'available': item.stdout | int}] }}"
   loop: "{{ disk_space_result.results }}"
@@ -37,7 +37,7 @@
     package_update_disk_space_check_enabled | bool and
     item.stdout | int < package_update_min_disk_space_mb
 
-- name: 🔍 Package-Update | disk_check | Display paths with insufficient space
+- name: Package-Update | disk_check | Display paths with insufficient space
   ansible.builtin.debug:
     msg: |
       WARNING: Insufficient disk space detected:
@@ -54,7 +54,7 @@
 # -----------------------------------------------------------------------------
 # 3. Abort If Requirements Not Met
 # -----------------------------------------------------------------------------
-- name: ❌ Package-Update | disk_check | Fail if insufficient disk space and abort enabled
+- name: Package-Update | disk_check | Fail if insufficient disk space and abort enabled
   ansible.builtin.fail:
     msg: >
       Update aborted due to insufficient disk space.

@@ -13,7 +13,7 @@
 # -----------------------------------------------------------------------------
 # 1. Managed Reboot With Wait
 # -----------------------------------------------------------------------------
-- name: 🔄 Package-Update | reboot | Reboot system and wait until available
+- name: Package-Update | reboot | Reboot system and wait until available
   become: true
   ansible.builtin.reboot:
     msg: "{{ default_reboot_message | default('Reboot initialized by Ansible') }}"
@@ -28,7 +28,7 @@
 # -----------------------------------------------------------------------------
 # 2. Asynchronous Reboot Without Wait (Optional)
 # -----------------------------------------------------------------------------
-- name: 🔄 Package-Update | reboot | Trigger reboot without waiting
+- name: Package-Update | reboot | Trigger reboot without waiting
   become: true
   ansible.builtin.shell: |
     sleep 2 && shutdown -r now "{{ default_reboot_message | default('Reboot initialized by Ansible') }}"
@@ -41,7 +41,7 @@
 # -----------------------------------------------------------------------------
 # 3. Report Reboot Completion Time
 # -----------------------------------------------------------------------------
-- name: 📊 Package-Update | reboot | Report reboot completion time
+- name: Package-Update | reboot | Report reboot completion time
   ansible.builtin.debug:
     msg: "The system rebooted in {{ _reboot_result_.elapsed }} seconds."
   when: >

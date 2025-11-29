@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.6] - 2025-11-29
+
+### Changed 🔄
+- Removed emojis from all task names across all task files for cleaner output
+- Affected files: `main.yml`, `assert.yml`, `check.yml`, `disk_check.yml`, `install.yml`, `post_info.yml`, `pre_info.yml`, `prerequisites.yml`, `reboot.yml`
+
 ## [1.0.5] - 2025-11-24
 
 ### Fixed 🔧
