@@ -1,16 +1,6 @@
 ---
-# =============================================================================
-# Ansible Role: Package Update - Debian-Specific Variables
-# =============================================================================
-# This file defines variables specific to Debian-based distributions.
-# These values override or supplement the common variables defined in main.yml.
-#
-# Sections:
-#   1. Package Management Commands
-# =============================================================================
+# Ansible Role: Package Update - Debian-specific variables.
+# These are NOT user-overridable. All use double-underscore prefix per CoP §3.1.4.
 
-# -----------------------------------------------------------------------------
-# 1. Package Management Commands
-# -----------------------------------------------------------------------------
 # Command used to check for available package updates on Debian systems
-package_update_check_update_command: "apt list --upgradable"
+__package_update_check_update_command: "apt list --upgradable"

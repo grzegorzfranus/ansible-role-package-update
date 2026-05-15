@@ -1,27 +1,7 @@
-# =============================================================================
-# Ansible Role: Package-Update - Molecule Verification Playbook
-# =============================================================================
-# This playbook verifies the installation and configuration of Package-Update.
-# It performs comprehensive checks of:
-# - Package management tools
-# - Configuration files
-# - System update status
-# - Cleanup operations
-# - Reboot configuration (if enabled)
-#
-# Flow:
-# 1. Load variables and gather facts
-# 2. Verify package managers
-# 3. Check configuration status
-# 4. Validate update operations
-# 5. Verify cleanup operations
-# =============================================================================
-
 ---
-# -----------------------------------------------------------------------------
-# 1. Environment Setup
-# -----------------------------------------------------------------------------
-- name: molecule | Verify Role
+# Package-Update Molecule — Verify role execution results.
+
+- name: Molecule | Verify
   hosts: all
   gather_facts: true
 
@@ -30,8 +10,8 @@
     - ../../vars/main.yml
 
   tasks:
-    - name: Verify | Gather OS specific variables
-      include_vars: "{{ lookup('first_found', params) }}"
+    - name: Verify | Gather OS-specific variables
+      ansible.builtin.include_vars: "{{ lookup('first_found', params) }}"
       vars:
         params:
           files:
@@ -45,85 +25,69 @@
           paths:
             - "../../vars"
 
-    # -----------------------------------------------------------------------------
-    # 2. Package Manager Verification
-    # -----------------------------------------------------------------------------
+    # Package manager verification
     - name: Verify | Check apt presence (Debian)
-      ansible.builtin.command:
-        cmd: which apt
-      register: _apt_result_
+      ansible.builtin.command: which apt
+      register: __verify_apt_result
       changed_when: false
-      ignore_errors: true
-      when: >
-        ansible_facts['os_family'] == "Debian"
+      failed_when: false
+      when:
+        - ansible_facts['os_family'] == "Debian"
 
     - name: Verify | Check dnf presence (RedHat)
-      ansible.builtin.command:
-        cmd: which dnf
-      register: _dnf_result_
+      ansible.builtin.command: which dnf
+      register: __verify_dnf_result
       changed_when: false
-      ignore_errors: true
-      when: >
-        ansible_facts['os_family'] == "RedHat"
+      failed_when: false
+      when:
+        - ansible_facts['os_family'] == "RedHat"
 
-    - name: Verify | Check package management tools availability
-      ansible.builtin.debug:
-        msg: "Package manager available: {{ (ansible_facts['os_family'] == 'Debian' and _apt_result_.rc == 0) or (ansible_facts['os_family'] == 'RedHat' and _dnf_result_.rc == 0) }}"
+    - name: Verify | Assert package manager is available
+      ansible.builtin.assert:
+        that:
+          - >
+            (ansible_facts['os_family'] == 'Debian' and __verify_apt_result.rc == 0) or
+            (ansible_facts['os_family'] == 'RedHat' and __verify_dnf_result.rc == 0)
+        fail_msg: "Package manager not found"
+        success_msg: "Package manager: {{ ansible_facts['pkg_mgr'] }}"
 
-    # -----------------------------------------------------------------------------
-    # 3. Configuration Verification
-    # -----------------------------------------------------------------------------
-    - name: Verify | Check if update configuration files exist (Debian)
+    # Log directory verification
+    - name: Verify | Check log directory exists
       ansible.builtin.stat:
-        path: "{{ item }}"
-      register: _apt_config_files_result_
-      with_items:
-        - /etc/apt/apt.conf.d/20auto-upgrades
-      ignore_errors: true
-      when: >
-        ansible_facts['os_family'] == "Debian"
+        path: "{{ package_update_log_directory }}"
+      register: __verify_log_dir
 
-    - name: Verify | Check if update configuration files exist (RedHat)
-      ansible.builtin.stat:
-        path: "{{ item }}"
-      register: _dnf_config_files_result_
-      with_items:
-        - /etc/dnf/automatic.conf
-      ignore_errors: true
-      when: >
-        ansible_facts['os_family'] == "RedHat"
+    - name: Verify | Assert log directory was created
+      ansible.builtin.assert:
+        that:
+          - __verify_log_dir.stat.exists
+          - __verify_log_dir.stat.isdir
+        fail_msg: "Log directory {{ package_update_log_directory }} does not exist"
+        success_msg: "Log directory: {{ package_update_log_directory }}"
 
-    # -----------------------------------------------------------------------------
-    # 4. System Status Verification
-    # -----------------------------------------------------------------------------
+    # System update status
     - name: Verify | Check system update status
-      ansible.builtin.command:
-        cmd: "{{ (ansible_facts['os_family'] == 'Debian') | ternary('apt-get -s upgrade', 'dnf check-update') }}"
-      register: _update_status_
+      ansible.builtin.command: "{{ __package_update_check_update_command }}"
+      register: __verify_update_status
       changed_when: false
-      ignore_errors: true
+      failed_when: false
 
-    - name: Verify | Show update status
+    - name: Verify | Display update status
       ansible.builtin.debug:
-        msg: "Updates available: {{ _update_status_.rc != 0 }}"
+        msg: "System is up to date: {{ __verify_update_status.rc == 0 }}"
 
-    # -----------------------------------------------------------------------------
-    # 5. Cleanup Verification
-    # -----------------------------------------------------------------------------
-    - name: Verify | Check for orphaned packages (Debian)
-      ansible.builtin.command:
-        cmd: apt-get --dry-run autoremove
-      register: _autoremove_status_
+    # Service status verification
+    - name: Verify | Check for failed services
+      ansible.builtin.command: systemctl --failed --no-legend --no-pager
+      register: __verify_failed_services
       changed_when: false
-      ignore_errors: true
-      when: >
-        ansible_facts['os_family'] == "Debian"
+      failed_when: false
+      when:
+        - ansible_facts['service_mgr'] == 'systemd'
 
-    - name: Verify | Check for orphaned packages (RedHat)
-      ansible.builtin.command:
-        cmd: dnf autoremove --assumeno
-      register: _autoremove_status_
-      changed_when: false
-      ignore_errors: true
-      when: >
-        ansible_facts['os_family'] == "RedHat"
+    - name: Verify | Display failed services
+      ansible.builtin.debug:
+        msg: "Failed services: {{ __verify_failed_services.stdout_lines | default([]) }}"
+      when:
+        - ansible_facts['service_mgr'] == 'systemd'
+        - __verify_failed_services.stdout_lines | default([]) | length > 0

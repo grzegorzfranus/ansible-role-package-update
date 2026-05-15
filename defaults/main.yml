@@ -5,9 +5,6 @@
 # This file defines default configuration values for the Package Update role.
 # These values can be overridden by setting them in your playbook or inventory.
 #
-# This role handles system package updates, including verification, installation,
-# and post-update checks with controlled system reboots if needed.
-#
 # Sections:
 #   1. General Settings
 #   2. Package Management Settings
@@ -60,25 +57,25 @@ package_update_log_upgradable_packages: true
 # Directory for logs
 package_update_log_directory: "/var/log/package-update"
 
-# Base filename for log files
-package_update_log_file_name: "package-update"
-
 # -----------------------------------------------------------------------------
 # 4. Disk Space Verification Settings
 # -----------------------------------------------------------------------------
-# Ensure sufficient disk space before updates
+# Ensure sufficient disk space before updates.
+# Each path has its own minimum threshold in MB.
+# - / and /var: 500 MB for package storage and cache
+# - /boot: 150 MB for kernel images (~50 MB per kernel on RHEL 9)
 
 # Enable disk space verification before updates
 package_update_disk_space_check_enabled: true
 
-# Minimum required disk space in MB for safe update
-package_update_min_disk_space_mb: 500
-
-# Paths to check for disk space (leave empty to check only /)
+# Paths to check with per-path minimum thresholds (MB)
 package_update_disk_check_paths:
-  - "/"
-  - "/var"
-  - "/boot"
+  - path: "/"
+    min_mb: 500
+  - path: "/var"
+    min_mb: 500
+  - path: "/boot"
+    min_mb: 150
 
 # Abort update if disk space requirements are not met
 package_update_abort_on_disk_space_error: true
@@ -86,29 +83,28 @@ package_update_abort_on_disk_space_error: true
 # -----------------------------------------------------------------------------
 # 5. Reboot Settings (Optional)
 # -----------------------------------------------------------------------------
-# Configure reboot behavior after updates. These values are used by reboot.yml
-# and can be overridden in inventory or playbooks.
+# Configure reboot behavior after updates.
 
 # Message to display during reboot
-default_reboot_message: "Reboot initialized by Ansible"
+package_update_reboot_message: "Reboot initialized by Ansible"
 
 # Whether to wait for the system to become available after reboot
-default_reboot_wait: true
+package_update_reboot_wait: true
 
 # Connection timeout for reboot verification (seconds)
-default_reboot_connect_timeout: 60
+package_update_reboot_connect_timeout: 60
 
 # Sleep time between connection attempts (seconds)
-default_reboot_wait_ctimeout: 5
+package_update_reboot_wait_ctimeout: 5
 
 # Delay before attempting reconnection (seconds)
-default_reboot_wait_delay: 10
+package_update_reboot_wait_delay: 10
 
 # Maximum time to wait for reconnection (seconds)
-default_reboot_wait_timeout: 300
+package_update_reboot_wait_timeout: 300
 
 # Whether to pause after the reboot before continuing
-default_reboot_interval: true
+package_update_reboot_interval: true
 
 # Seconds to pause after reboot before continuing tasks
-default_reboot_interval_seconds: 10
+package_update_reboot_interval_seconds: 10

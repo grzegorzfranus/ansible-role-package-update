@@ -1,48 +1,31 @@
 ---
-# =============================================================================
-# Ansible Role: Package Update - Reboot Tasks
-# =============================================================================
-# This file manages the reboot process after package updates.
-#
-# Flow:
-# 1. Managed reboot with wait until host is available
-# 2. Asynchronous reboot without waiting (optional)
-# 3. Report reboot completion time
-# =============================================================================
+# Package-Update Reboot — Managed reboot after package updates.
 
-# -----------------------------------------------------------------------------
-# 1. Managed Reboot With Wait
-# -----------------------------------------------------------------------------
 - name: Package-Update | reboot | Reboot system and wait until available
   become: true
   ansible.builtin.reboot:
-    msg: "{{ default_reboot_message | default('Reboot initialized by Ansible') }}"
-    connect_timeout: "{{ default_reboot_connect_timeout | default('60') | int }}"
-    reboot_timeout: "{{ default_reboot_wait_timeout | default('300') | int }}"
-    pre_reboot_delay: "{{ default_reboot_wait_delay | default('10') | int }}"
-    post_reboot_delay: "{{ (default_reboot_interval | default(true)) | ternary(default_reboot_interval_seconds | default('10'), 0) | int }}"
-  register: _reboot_result_
+    msg: "{{ package_update_reboot_message | default('Reboot initialized by Ansible') }}"
+    connect_timeout: "{{ package_update_reboot_connect_timeout | default('60') | int }}"
+    reboot_timeout: "{{ package_update_reboot_wait_timeout | default('300') | int }}"
+    pre_reboot_delay: "{{ package_update_reboot_wait_delay | default('10') | int }}"
+    post_reboot_delay: "{{ (package_update_reboot_interval | default(true)) | ternary(package_update_reboot_interval_seconds | default('10'), 0) | int }}"
+  register: __package_update_reboot_result
   when: >
-    default_reboot_wait | default(true)
+    package_update_reboot_wait | default(true)
 
-# -----------------------------------------------------------------------------
-# 2. Asynchronous Reboot Without Wait (Optional)
-# -----------------------------------------------------------------------------
 - name: Package-Update | reboot | Trigger reboot without waiting
   become: true
   ansible.builtin.shell: |
-    sleep 2 && shutdown -r now "{{ default_reboot_message | default('Reboot initialized by Ansible') }}"
+    sleep 2 && shutdown -r now "{{ package_update_reboot_message | default('Reboot initialized by Ansible') }}"
   async: 1
   poll: 0
-  ignore_errors: true
+  changed_when: false
+  failed_when: false
   when: >
-    not (default_reboot_wait | default(true))
+    not (package_update_reboot_wait | default(true))
 
-# -----------------------------------------------------------------------------
-# 3. Report Reboot Completion Time
-# -----------------------------------------------------------------------------
 - name: Package-Update | reboot | Report reboot completion time
   ansible.builtin.debug:
-    msg: "The system rebooted in {{ _reboot_result_.elapsed }} seconds."
+    msg: "The system rebooted in {{ __package_update_reboot_result.elapsed }} seconds."
   when: >
-    _reboot_result_ is defined
+    __package_update_reboot_result is defined

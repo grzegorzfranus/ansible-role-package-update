@@ -18,12 +18,9 @@ galaxy_info:
       versions:
         - "noble"
         - "jammy"
-    - name: Rocky
+    - name: EL
       versions:
-        - "9.0"
-    - name: OracleLinux
-      versions:
-        - "9.0"
+        - "9"
 
   galaxy_tags:
     - package
