@@ -1,18 +1,6 @@
 ---
-# =============================================================================
-# Ansible Role: Package Update - Prerequisites Tasks
-# =============================================================================
-# This file contains tasks to ensure the system has all prerequisites for
-# package updates.
-#
-# Flow:
-# 1. Install required utility packages
-# 2. Create logging directory
-# =============================================================================
+# Package-Update Prerequisites — Ensure system prerequisites for updates.
 
-# -----------------------------------------------------------------------------
-# 1. Install Required Packages
-# -----------------------------------------------------------------------------
 - name: Package-Update | prerequisites | Install dnf-utils package (RedHat)
   become: true
   ansible.builtin.package:
@@ -22,9 +10,6 @@
     ansible_facts['os_family'] | lower == "redhat" and
     ansible_facts['pkg_mgr'] == "dnf"
 
-# -----------------------------------------------------------------------------
-# 2. Create Logging Directory
-# -----------------------------------------------------------------------------
 - name: Package-Update | prerequisites | Create log directory
   become: true
   ansible.builtin.file:

@@ -1,0 +1,121 @@
+---
+argument_specs:
+  main:
+    short_description: "Manage system package updates across Linux distributions"
+    description:
+      - "Updates system packages, verifies disk space, performs controlled reboots, and validates service state."
+      - "Supports Ubuntu 24.04/22.04, Debian 12/11, and EL 9 (RHEL, Rocky, Alma, Oracle)."
+    author: "Grzegorz Franus"
+
+    options:
+      # General Settings
+      package_update_role_action:
+        description: "Define which parts of the role to execute"
+        type: str
+        default: "all"
+        choices:
+          - all
+          - check
+
+      # Package Management
+      package_update_mode:
+        description: "Update mode: all packages, security-only, or selected packages"
+        type: str
+        default: "all"
+        choices:
+          - all
+          - security
+          - selected
+
+      package_update_include_packages_list:
+        description: "List of packages to update (used with mode: 'selected')"
+        type: list
+        elements: str
+        default: []
+
+      package_update_display_upgradable_packages:
+        description: "Display available packages to upgrade in output"
+        type: bool
+        default: false
+
+      package_update_excluded_packages_list:
+        description: "List of packages to exclude from updates"
+        type: list
+        elements: str
+        default: []
+
+      # Logging
+      package_update_log_upgradable_packages:
+        description: "Enable logging of available packages and system changes"
+        type: bool
+        default: true
+
+      package_update_log_directory:
+        description: "Directory path where logs will be stored"
+        type: str
+        default: "/var/log/package-update"
+
+
+      # Disk Space Verification
+      package_update_disk_space_check_enabled:
+        description: "Enable disk space verification before updates"
+        type: bool
+        default: true
+
+      package_update_disk_check_paths:
+        description: "Paths to check with per-path minimum thresholds (MB)"
+        type: list
+        elements: dict
+        default:
+          - path: "/"
+            min_mb: 500
+          - path: "/var"
+            min_mb: 500
+          - path: "/boot"
+            min_mb: 150
+
+      package_update_abort_on_disk_space_error:
+        description: "Abort update if disk space requirements are not met"
+        type: bool
+        default: true
+
+      # Reboot Settings
+      package_update_reboot_message:
+        description: "Message to display during reboot"
+        type: str
+        default: "Reboot initialized by Ansible"
+
+      package_update_reboot_wait:
+        description: "Whether to wait for system to become available after reboot"
+        type: bool
+        default: true
+
+      package_update_reboot_connect_timeout:
+        description: "Connection timeout for reboot verification (seconds)"
+        type: int
+        default: 60
+
+      package_update_reboot_wait_ctimeout:
+        description: "Sleep time between connection attempts (seconds)"
+        type: int
+        default: 5
+
+      package_update_reboot_wait_delay:
+        description: "Delay before attempting reconnection (seconds)"
+        type: int
+        default: 10
+
+      package_update_reboot_wait_timeout:
+        description: "Maximum time to wait for reconnection (seconds)"
+        type: int
+        default: 300
+
+      package_update_reboot_interval:
+        description: "Whether to pause after reboot before continuing tasks"
+        type: bool
+        default: true
+
+      package_update_reboot_interval_seconds:
+        description: "Seconds to pause after reboot before continuing tasks"
+        type: int
+        default: 10

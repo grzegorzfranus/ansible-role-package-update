@@ -5,6 +5,48 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-05-15
+
+### Breaking Changes
+- Renamed `default_reboot_*` variables to `package_update_reboot_*` for Red Hat CoP §3.1.4 compliance
+- Internal registered variables renamed to `__package_update_*` double-underscore prefix convention
+- `package_update_disk_check_paths` changed from list of strings to list of dicts with per-path thresholds (`path` + `min_mb`)
+- Removed `package_update_min_disk_space_mb` — disk space thresholds are now per-path
+- `package_update_log_file_name` removed from public API — now auto-generated internal var (`__package_update_log_file_name`)
+- `package_update_check_update_command` removed from public API — now internal OS-specific var (`__package_update_check_update_command`)
+
+### Added
+- `meta/argument_specs.yml` for Ansible-native argument validation (CoP §3.1.20)
+- `package_update_excluded_packages_list` to `argument_specs.yml` for formal validation
+- Per-path disk space thresholds: `/boot` at 150 MB for kernel images, `/` and `/var` at 500 MB
+- Documented EL 8 as unsupported (`python3-dnf` incompatible with ansible-core >= 2.17)
+- Adopted `EL` (Enterprise Linux) Galaxy platform standard for RHEL-derived distributions
+- Role Properties section in README (idempotency, check mode, diff mode)
+- `TODO.md` with future improvement backlog
+
+### Changed
+- Upgraded ansible-lint profile from `min` to `shared` (passes `production`)
+- Privilege escalation: moved `become: true` from block-level to individual tasks in `install.yml`
+- Minimized task file comments to single-line headers (matching tailscale pattern)
+- Added `name:` to unnamed block in `tasks/main.yml`
+- Refactored `tasks/assert.yml` to runtime-only checks (basic validation delegated to `argument_specs.yml`)
+- Internal vars in `vars/main.yml`, `vars/redhat.yml`, `vars/debian.yml` renamed to `__` prefix (CoP §3.1.4)
+- README rewritten to Red Hat CoP §3.1.17 documentation standard
+- Removed `meta-no-info` from ansible-lint skip list
+- Molecule `converge.yml`: updated to actual v2.0.0 vars, relative role path (`../../..`), FQCN, `ansible.builtin.systemd` wait
+- Molecule `prepare.yml`: replaced `shell` + `chmod` with idempotent `ansible.builtin.file`, added `become: true`
+- Molecule `verify.yml`: replaced `ignore_errors` with `failed_when: false`, `_var_` → `__verify_` prefix, added `assert` checks
+- Molecule `molecule.yml`: removed deprecated `lint:` section
+- Templates updated to use `__package_update_*` internal variable names
+
+### Fixed
+- Fixed disk check false positive on `/boot` by implementing per-path thresholds
+- Fixed path regex `^/.+` → `^/` in assert to accept root path `/`
+- Fixed undefined variable errors in templates (`_update_check_result_`, `_pre_running_services_`, etc.)
+- Added explicit `mode: "0644"` to all template tasks (`risky-file-permissions` lint compliance)
+- Replaced `ignore_errors: true` with `failed_when: false` in `tasks/reboot.yml` (`ignore-errors` lint compliance)
+- Fixed task key order (`when` before `block`) across `tasks/main.yml` and `tasks/install.yml`
+
 ## [1.0.6] - 2025-11-29
 
 ### Changed 🔄
