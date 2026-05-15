@@ -7,7 +7,6 @@
 
   tasks:
     - name: Prepare | Fix /etc/shadow permissions
-      become: true
       ansible.builtin.file:
         path: /etc/shadow
         mode: "0400"
