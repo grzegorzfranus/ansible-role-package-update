@@ -3,6 +3,13 @@
 # Basic type/choice validation is handled by meta/argument_specs.yml.
 # This file performs runtime-only checks (regex patterns, content validation, cross-field logic).
 
+- name: Package-Update | assert | Validate supported OS family
+  ansible.builtin.assert:
+    that:
+      - ansible_facts['os_family'] | lower in ['redhat', 'debian']
+    fail_msg: "Unsupported OS family '{{ ansible_facts['os_family'] }}'. Supported: RedHat, Debian"
+    success_msg: "OS family: {{ ansible_facts['os_family'] }}"
+
 - name: Package-Update | assert | Validate role action choice
   ansible.builtin.assert:
     that:

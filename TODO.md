@@ -3,7 +3,7 @@
 Observations from Red Hat CoP compliance audit (2026-05-15).
 To be implemented as separate branches/versions after v2.0.0 merge.
 
-## 1. OS Family Validation Gate 🔴 HIGH
+## 1. OS Family Validation Gate ✅ DONE (v2.1.0)
 
 **Problem**: Role does not validate in `assert.yml` whether the target OS is supported.
 Running on an unsupported OS (e.g. Alpine, SUSE) will produce unpredictable behavior.
