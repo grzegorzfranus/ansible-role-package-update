@@ -86,6 +86,12 @@ package_update_abort_on_disk_space_error: true
 # Configure reboot behavior after updates.
 
 # Message to display during reboot
+# Enable or disable reboots globally.
+# When false, reboots are skipped even if a kernel update requires one.
+# Use in environments where reboots are deferred to maintenance windows.
+package_update_reboot_enabled: true
+
+# Message to display during reboot
 package_update_reboot_message: "Reboot initialized by Ansible"
 
 # Whether to wait for the system to become available after reboot

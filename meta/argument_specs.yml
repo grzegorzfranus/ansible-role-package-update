@@ -80,6 +80,11 @@ argument_specs:
         default: true
 
       # Reboot Settings
+      package_update_reboot_enabled:
+        description: "Enable or disable reboots globally. When false, reboots are skipped even if required."
+        type: bool
+        default: true
+
       package_update_reboot_message:
         description: "Message to display during reboot"
         type: str

@@ -143,8 +143,9 @@
     - name: Package-Update | main | Reboot system if required (RedHat)
       ansible.builtin.include_tasks: reboot.yml
       when: >
-        ( ansible_facts['os_family'] | lower == "redhat" and __package_update_reboot_required_redhat.rc == 1 ) or
-        ( ansible_facts['os_family'] | lower == "redhat" and __package_update_reboot_required_services_redhat.rc == 1 )
+        package_update_reboot_enabled | bool and
+        (( ansible_facts['os_family'] | lower == "redhat" and __package_update_reboot_required_redhat.rc == 1 ) or
+        ( ansible_facts['os_family'] | lower == "redhat" and __package_update_reboot_required_services_redhat.rc == 1 ))
       tags:
         - always
         - reboot
@@ -152,8 +153,26 @@
     - name: Package-Update | main | Reboot system if required (Debian)
       ansible.builtin.include_tasks: reboot.yml
       when: >
-        ( ansible_facts['os_family'] | lower == "debian" and __package_update_reboot_required_debian.stat.exists ) or
-        ( ansible_facts['os_family'] | lower == "debian" and __package_update_reboot_required_services_debian.stat.exists )
+        package_update_reboot_enabled | bool and
+        (( ansible_facts['os_family'] | lower == "debian" and __package_update_reboot_required_debian.stat.exists ) or
+        ( ansible_facts['os_family'] | lower == "debian" and __package_update_reboot_required_services_debian.stat.exists ))
+      tags:
+        - always
+        - reboot
+
+    - name: Package-Update | main | Warn that reboot is pending but disabled
+      ansible.builtin.debug:
+        msg: >-
+          WARNING: System reboot is required but disabled
+          (package_update_reboot_enabled=false). Schedule reboot manually.
+      when: >
+        not (package_update_reboot_enabled | bool) and
+        (( ansible_facts['os_family'] | lower == "redhat" and
+           (__package_update_reboot_required_redhat.rc == 1 or
+            __package_update_reboot_required_services_redhat.rc == 1) ) or
+        ( ansible_facts['os_family'] | lower == "debian" and
+           (__package_update_reboot_required_debian.stat.exists or
+            __package_update_reboot_required_services_debian.stat.exists) ))
       tags:
         - always
         - reboot

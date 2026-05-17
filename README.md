@@ -132,6 +132,7 @@ Each entry requires:
 
 | Variable | Description | Default |
 |----------|-------------|---------|
+| `package_update_reboot_enabled` | Enable or disable reboots globally | `true` |
 | `package_update_reboot_message` | Message to display during reboot | `"Reboot initialized by Ansible"` |
 | `package_update_reboot_wait` | Wait for system to come back after reboot | `true` |
 | `package_update_reboot_connect_timeout` | Connection timeout for reboot verification (seconds) | `60` |
