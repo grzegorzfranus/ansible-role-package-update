@@ -21,7 +21,7 @@ Running on an unsupported OS (e.g. Alpine, SUSE) will produce unpredictable beha
 
 ---
 
-## 2. Global Reboot Toggle 🟡 MEDIUM
+## 2. Global Reboot Toggle ✅ DONE (v2.2.0)
 
 **Problem**: No option to globally disable reboots even when kernel requires it.
 Enterprise environments often need to defer reboots to maintenance windows.

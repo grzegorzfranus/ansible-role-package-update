@@ -77,6 +77,7 @@
 - name: Package-Update | assert | Validate reboot boolean flags
   ansible.builtin.assert:
     that:
+      - package_update_reboot_enabled is boolean
       - package_update_reboot_wait is boolean
       - package_update_reboot_interval is boolean
     fail_msg: "Reboot boolean flags must be true or false"
@@ -95,6 +96,8 @@
       - (package_update_reboot_interval_seconds | int) > 0
       - (package_update_reboot_interval_seconds | int) <= 3600
     fail_msg: "Reboot timeout values out of range"
+  when: >
+    package_update_reboot_enabled | bool
 
 - name: Package-Update | assert | Validate reboot message
   ansible.builtin.assert:
@@ -103,3 +106,5 @@
       - package_update_reboot_message | length > 0
     fail_msg: "Reboot message must be a non-empty string"
     success_msg: "Reboot message: {{ package_update_reboot_message }}"
+  when: >
+    package_update_reboot_enabled | bool

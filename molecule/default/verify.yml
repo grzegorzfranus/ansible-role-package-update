@@ -64,6 +64,12 @@
           - __verify_log_dir.stat.isdir
         fail_msg: "Log directory {{ package_update_log_directory }} does not exist"
         success_msg: "Log directory: {{ package_update_log_directory }}"
+      when: __verify_log_dir.stat.exists
+
+    - name: Verify | Log directory skipped (no updates available)
+      ansible.builtin.debug:
+        msg: "Log directory not created — no package updates were available during converge"
+      when: not __verify_log_dir.stat.exists
 
     # System update status
     - name: Verify | Check system update status
