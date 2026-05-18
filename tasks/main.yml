@@ -230,3 +230,33 @@
       tags:
         - always
         - logging
+
+- name: Package-Update | main | Execution Summary
+  ansible.builtin.debug:
+    msg: |
+      =======================================================
+      🚀 PACKAGE UPDATE EXECUTION SUMMARY
+      =======================================================
+
+      📦 Updates:
+        - Mode: {{ package_update_mode }}
+        - Updates Available: {{ __package_update_availability | default(false) | ternary('Yes', 'No') }}
+
+      🔄 Reboot:
+        - Reboot Performed: {{ 'Yes' if __package_update_reboot_result is defined and __package_update_reboot_result.changed else 'No' }}
+        - Elapsed Time: {{ __package_update_reboot_result.elapsed | default(0) }} seconds
+
+      ⚙️  Services:
+        - Faulty Services: {{ __package_update_faulty_services | default(['None']) | join(', ') }}
+
+      💾 Disk Space (Pre-update availability):
+      {% if package_update_disk_space_check_enabled | bool and __package_update_disk_space_result is defined %}
+      {% for item in __package_update_disk_space_result.results | default([]) %}
+        - {{ item.item.path }}: {{ item.stdout }} MB
+      {% endfor %}
+      {% else %}
+        - Skipped (package_update_disk_space_check_enabled=false)
+      {% endif %}
+      =======================================================
+  tags:
+    - always
