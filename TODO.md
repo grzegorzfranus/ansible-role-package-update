@@ -31,7 +31,7 @@ When `false`, skip reboot entirely and log a warning that reboot is pending.
 
 ---
 
-## 3. Molecule Multi-Distro Coverage & Debian 13 🔴 HIGH
+## 3. Molecule Multi-Distro Coverage & Debian 13 ✅ DONE (v2.3.0)
 
 **Problem**: Debian 13 (Trixie) is not included in the Molecule test matrix or documented as supported.
 Additionally, the CI matrix should be audited to ensure every platform listed in `README.md` is covered.
