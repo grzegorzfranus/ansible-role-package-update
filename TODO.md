@@ -31,7 +31,28 @@ When `false`, skip reboot entirely and log a warning that reboot is pending.
 
 ---
 
-## 3. Execution Summary 🟡 MEDIUM
+## 3. Molecule Multi-Distro Coverage & Debian 13 🔴 HIGH
+
+**Problem**: Debian 13 (Trixie) is not included in the Molecule test matrix or documented as supported.
+Additionally, the CI matrix should be audited to ensure every platform listed in `README.md` is covered.
+
+**Current CI matrix** (`test-and-validation.yml`):
+- ✅ Ubuntu 24.04 (`ubuntu2404`)
+- ✅ Ubuntu 22.04 (`ubuntu2204`)
+- ✅ Debian 12 (`debian12`)
+- ✅ Debian 11 (`debian11`)
+- ✅ Rocky Linux 9 (`rockylinux9`)
+- ❌ Debian 13 (`debian13`) — **missing**
+
+**Solution**:
+1. Add `debian13` to the CI matrix in `.github/workflows/test-and-validation.yml`
+2. Add Debian 13 to supported platforms in `README.md`, `meta/main.yml`, and `meta/argument_specs.yml`
+3. Verify `geerlingguy/docker-debian13-ansible` image availability
+4. Add `vars/debian_13.yml` if Debian 13 requires OS-specific variable overrides
+
+---
+
+## 4. Execution Summary 🟡 MEDIUM
 
 **Problem**: No end-of-run summary showing what happened.
 Enterprise pattern: clear summary of actions taken.
