@@ -1,8 +1,8 @@
 # Ansible Role: Package Update
 
-|Source|Version|Tests|License|
+|Source|Version|CI|License|
 |------|-------|-------|-------|
-|[![Source Code](https://img.shields.io/badge/source-github-blue.svg)](https://github.com/grzegorzfranus/ansible-role-package-update)|[![Version](https://img.shields.io/github/v/release/grzegorzfranus/ansible-role-package-update)](https://github.com/grzegorzfranus/ansible-role-package-update/releases)|[![tests](https://github.com/grzegorzfranus/ansible-role-package-update/actions/workflows/test-and-validation.yml/badge.svg)](https://github.com/grzegorzfranus/ansible-role-package-update/actions)|[![Repository License](https://img.shields.io/badge/license-apache2.0-brightgreen.svg)](LICENSE)|
+|[![Source Code](https://img.shields.io/badge/source-github-blue.svg)](https://github.com/grzegorzfranus/ansible-role-package-update)|[![Version](https://img.shields.io/github/v/release/grzegorzfranus/ansible-role-package-update)](https://github.com/grzegorzfranus/ansible-role-package-update/releases)|[![CI](https://github.com/grzegorzfranus/ansible-role-package-update/actions/workflows/ci.yml/badge.svg)](https://github.com/grzegorzfranus/ansible-role-package-update/actions/workflows/ci.yml)|[![Repository License](https://img.shields.io/badge/license-apache2.0-brightgreen.svg)](LICENSE)|
 
 This Ansible role manages system package updates across various Linux distributions. It provides a unified approach to check for updates, upgrade packages, perform controlled reboots when required, and verify system state post-update.
 
@@ -252,8 +252,10 @@ This role has no dependencies.
 ansible-role-package-update/
 ├── .github/                  # GitHub Actions workflows
 │   └── workflows/           # CI/CD automation
-│       ├── test-and-validation.yml
-│       └── publish-to-galaxy.yml
+│       ├── ci.yml           # CI pipeline (reusable ansible-ci.yml)
+│       └── release.yml      # Release Please + Galaxy publish
+├── .release-please-manifest.json # Release Please version manifest
+├── release-please-config.json # Release Please configuration
 ├── CHANGELOG.md              # Version history and changes
 ├── LICENSE                   # Apache-2.0 license
 ├── README.md                # This documentation file
@@ -388,27 +390,44 @@ sudo journalctl -u <service-name> --no-pager
 sudo systemctl restart <service-name>
 ```
 
-## 🧪 CI/CD Pipelines
+## CI/CD Pipeline
 
-### 🧪 Test & Validation Pipeline
-- **Workflow**: `.github/workflows/test-and-validation.yml`
-- **Purpose**: Automated testing using Molecule across multiple distributions
-- **Triggers**: Push to main branch, pull requests
+### CI Pipeline
 
-### 📦 Galaxy Publishing
-- **Workflow**: `.github/workflows/publish-to-galaxy.yml`
-- **Purpose**: Automated role publishing to Ansible Galaxy
-- **Triggers**: Tagged releases (v*)
+Runs on every Pull Request via centralized reusable workflow:
 
-## 🤝 Contributing
+1. **Branch Name Lint** — enforces naming conventions (`feature/`, `bugfix/`, etc.)
+2. **YAML Lint** — validates all YAML files
+3. **Ansible Lint** — enforces best practices and guidelines compliance
+4. **Security Scan** — TruffleHog secret detection
+5. **Molecule Tests** — matrix across Ubuntu 24.04, Ubuntu 22.04, Debian 13, Debian 12, Debian 11, and Rocky Linux 9
+6. **Merge Check** — aggregated status check for branch protection
+
+### Release & Publish
+
+Automated via [Release Please](https://github.com/googleapis/release-please):
+
+1. Merge to `main` → Release Please creates a Release PR with changelog
+2. Merge Release PR → creates Git tag + GitHub Release
+3. Galaxy publish triggers automatically on release using centralized action
+
+## Contributing
 
 Contributions, bug reports, and feature requests are welcome!
 
-- Fork the repository and create your branch from `main`.
-- Make your changes with clear, descriptive commit messages.
-- Ensure your code passes all Molecule and lint tests.
-- Submit a pull request describing your changes and the motivation.
-- For major changes, please open an issue first to discuss what you would like to change.
+- Fork the repository and create your branch from `main`
+- Use [Conventional Commits](https://www.conventionalcommits.org/) for commit messages:
+  - `feat:` — new features (minor version bump)
+  - `fix:` — bug fixes (patch version bump)
+  - `docs:` — documentation changes
+  - `refactor:` — code refactoring
+  - `test:` — test additions
+  - `ci:` — CI/CD changes
+  - `chore:` — maintenance tasks
+- Use branch naming convention: `feature/`, `bugfix/`, `hotfix/`, `docs/`, `refactor/`, `test/`, `chore/`, `ci/`
+- Ensure your code passes all CI checks (YAML lint, Ansible lint, Molecule tests)
+- Submit a pull request describing your changes
+- For major changes, please open an issue first to discuss what you would like to change
 
 If you have questions or suggestions, feel free to open an issue or contact the author via GitHub.
 
