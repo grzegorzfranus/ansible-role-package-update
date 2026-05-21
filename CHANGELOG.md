@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.0](https://github.com/grzegorzfranus/ansible-role-package-update/compare/v2.4.1...v2.5.0) (2026-05-21)
+
+
+### Features
+
+* migrate to centralized CI, Release Please, and Galaxy publish ([#7](https://github.com/grzegorzfranus/ansible-role-package-update/issues/7)) ([3db58d9](https://github.com/grzegorzfranus/ansible-role-package-update/commit/3db58d98daa3c3daee2540cc5604fd4b9eb7bb89))
+
 ## [2.4.1] - 2026-05-18
 
 ### Fixed
