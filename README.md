@@ -79,7 +79,24 @@ git clone https://github.com/grzegorzfranus/ansible-role-package-update.git
 ansible-playbook -i inventory package-update.yml
 ```
 
-## ⚙️ Role Variables
+## ⚙️ Configuration
+
+### Default Configuration
+
+The role is pre-configured with secure and safe defaults:
+
+```yaml
+# Define which parts of the role to execute (Options: 'all', 'check')
+package_update_role_action: "all"
+
+# Update mode (Options: 'all', 'security', 'selected')
+package_update_mode: "all"
+
+# Enable or disable reboots globally
+package_update_reboot_enabled: true
+```
+
+## 📊 Variables
 
 ### 1. General Settings
 
@@ -151,6 +168,10 @@ Each entry requires:
 | **Atomic** | ❌ No | A failure mid-execution may leave the system in a partially updated state. |
 | **Check Mode** | ✅ Supported | Most tasks work in check mode. Mutating commands are skipped. |
 | **Diff Mode** | ✅ Supported | Template tasks support diff mode for change preview. |
+
+## 📤 Role Output
+
+This role does not set any public output facts.
 
 ## 📦 Dependencies
 
