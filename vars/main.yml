@@ -1,6 +1,10 @@
 ---
-# Ansible Role: Package Update - Internal constants and computed values.
+# =============================================================================
+# Ansible Role: Package Update - Internal Variables
+# =============================================================================
+# Internal constants and computed values.
 # These are NOT user-overridable. All use double-underscore prefix per CoP §3.1.4.
+# =============================================================================
 
 # Log file name format with hostname and timestamp
 __package_update_log_file_name: >-

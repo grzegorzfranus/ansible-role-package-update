@@ -1,5 +1,9 @@
 ---
-# Package-Update Install — Execute package updates by mode.
+# =============================================================================
+# Ansible Role: Package Update - Tasks: Install
+# =============================================================================
+# Execute package updates by mode (all, security, or selected).
+# =============================================================================
 
 - name: Package-Update | install | Update all packages
   when: >

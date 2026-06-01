@@ -1,6 +1,10 @@
 ---
-# Package-Update Main — Orchestrates role execution in order.
+# =============================================================================
+# Ansible Role: Package Update - Tasks: Main
+# =============================================================================
+# Orchestrates role execution in order.
 # Flow: vars → assert → check → prereqs → disk → log → pre_info → install → reboot → post_info → verify
+# =============================================================================
 
 - name: Package-Update | main | Load OS-specific variables
   ansible.builtin.include_vars: "{{ lookup('first_found', params) }}"
@@ -94,6 +98,9 @@
         - always
         - install
 
+      # Justification: Use command module because checking if the system needs a
+      # reboot after kernel/system package updates requires running the
+      # platform-specific 'needs-restarting' utility, which has no native Ansible module.
     - name: Package-Update | main | Check if system needs reboot (RedHat)
       become: true
       ansible.builtin.command: "dnf -q needs-restarting -r"
@@ -117,6 +124,9 @@
         - always
         - reboot_check
 
+      # Justification: Use command module because checking if running services
+      # need to be restarted after library updates requires running the
+      # platform-specific 'needs-restarting' utility, which has no native Ansible module.
     - name: Package-Update | main | Check if services need reboot (RedHat)
       become: true
       ansible.builtin.command: "dnf -q needs-restarting -s"

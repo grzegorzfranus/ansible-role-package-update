@@ -40,6 +40,7 @@ The role executes package updates using a structured execution pipeline:
 ## 📋 Requirements
 
 - **Ansible**: 2.15 or higher
+- **Python**: 3.9 or higher on target hosts
 - **Network**: Internet/Intranet access to package repositories
 - **Privileges**: sudo/root access on target hosts
 

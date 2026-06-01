@@ -1,7 +1,11 @@
 ---
-# Package-Update Assert — Runtime validation of variable values.
+# =============================================================================
+# Ansible Role: Package Update - Tasks: Assert
+# =============================================================================
+# Runtime validation of variable values.
 # Basic type/choice validation is handled by meta/argument_specs.yml.
 # This file performs runtime-only checks (regex patterns, content validation, cross-field logic).
+# =============================================================================
 
 - name: Package-Update | assert | Validate supported OS family
   ansible.builtin.assert:

@@ -1,5 +1,9 @@
 ---
-# Package-Update Prerequisites — Ensure system prerequisites for updates.
+# =============================================================================
+# Ansible Role: Package Update - Tasks: Prerequisites
+# =============================================================================
+# Ensure system prerequisites for updates.
+# =============================================================================
 
 - name: Package-Update | prerequisites | Install dnf-utils package (RedHat)
   become: true
