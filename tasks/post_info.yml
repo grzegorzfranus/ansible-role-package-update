@@ -1,5 +1,9 @@
 ---
-# Package-Update Post-Info — Gather system information after updates.
+# =============================================================================
+# Ansible Role: Package Update - Tasks: Post-Info
+# =============================================================================
+# Gather system information after updates.
+# =============================================================================
 
 - name: Package-Update | post_info | Gather package facts
   become: true

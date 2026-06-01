@@ -1,5 +1,9 @@
 ---
-# Package-Update Pre-Info — Gather system information before updates.
+# =============================================================================
+# Ansible Role: Package Update - Tasks: Pre-Info
+# =============================================================================
+# Gather system information before updates.
+# =============================================================================
 
 - name: Package-Update | pre_info | Gather package facts
   become: true

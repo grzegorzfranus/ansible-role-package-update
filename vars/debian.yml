@@ -1,6 +1,10 @@
 ---
-# Ansible Role: Package Update - Debian-specific variables.
+# =============================================================================
+# Ansible Role: Package Update - Debian Variables
+# =============================================================================
+# Debian-specific variables.
 # These are NOT user-overridable. All use double-underscore prefix per CoP §3.1.4.
+# =============================================================================
 
 # Command used to check for available package updates on Debian systems
 __package_update_check_update_command: "apt list --upgradable"

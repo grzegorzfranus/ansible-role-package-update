@@ -1,5 +1,9 @@
 ---
-# Package-Update Check — Detect available package updates.
+# =============================================================================
+# Ansible Role: Package Update - Tasks: Check
+# =============================================================================
+# Detect available package updates.
+# =============================================================================
 
 - name: Package-Update | check | Update package cache (RedHat)
   become: true
@@ -17,6 +21,7 @@
     ansible_facts['os_family'] | lower == "debian" and
     ansible_facts['pkg_mgr'] == "apt"
 
+# Justification: Use command module to query package availability because native package modules (apt/dnf) do not support dry-run package listing in a standard structured way across both OS families.
 - name: Package-Update | check | Check for available packages to upgrade
   become: true
   ansible.builtin.command: "{{ __package_update_check_update_command }}"

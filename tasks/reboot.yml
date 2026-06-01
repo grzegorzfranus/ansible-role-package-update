@@ -1,5 +1,9 @@
 ---
-# Package-Update Reboot — Managed reboot after package updates.
+# =============================================================================
+# Ansible Role: Package Update - Tasks: Reboot
+# =============================================================================
+# Managed reboot after package updates.
+# =============================================================================
 
 - name: Package-Update | reboot | Reboot system and wait until available
   become: true
@@ -13,6 +17,7 @@
   when: >
     package_update_reboot_wait | default(true)
 
+# Justification: Use shell module to trigger reboot asynchronously without blocking/waiting because the native reboot module requires waiting for the host to come back.
 - name: Package-Update | reboot | Trigger reboot without waiting
   become: true
   ansible.builtin.shell: |

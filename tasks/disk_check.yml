@@ -1,6 +1,11 @@
 ---
-# Package-Update Disk Check — Verify disk space before updates.
+# =============================================================================
+# Ansible Role: Package Update - Tasks: Disk Check
+# =============================================================================
+# Verify disk space before updates.
+# =============================================================================
 
+# Justification: Use shell module with pipefail because native Ansible fact collection (ansible_mounts) does not dynamically compute free space reliably under all mount topologies or loop dev mounts.
 - name: Package-Update | disk_check | Check available disk space
   become: true
   ansible.builtin.shell: |
