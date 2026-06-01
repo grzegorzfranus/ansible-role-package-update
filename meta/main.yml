@@ -17,6 +17,7 @@ galaxy_info:
         - "bullseye"
     - name: Ubuntu
       versions:
+        - "resolute"
         - "noble"
         - "jammy"
     - name: EL

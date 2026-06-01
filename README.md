@@ -25,6 +25,7 @@ This Ansible role manages system package updates across various Linux distributi
 
 | OS Family | Version | Status |
 |-----------|---------|--------|
+| Ubuntu | 26.04 (Resolute) | ![✓](https://img.shields.io/badge/✓-brightgreen.svg) |
 | Ubuntu | 24.04 (Noble) | ![✓](https://img.shields.io/badge/✓-brightgreen.svg) |
 | Ubuntu | 22.04 (Jammy) | ![✓](https://img.shields.io/badge/✓-brightgreen.svg) |
 | Debian | 13 (Trixie) | ![✓](https://img.shields.io/badge/✓-brightgreen.svg) |
@@ -421,7 +422,7 @@ Runs on every Pull Request via centralized reusable workflow:
 2. **YAML Lint** — validates all YAML files
 3. **Ansible Lint** — enforces best practices and guidelines compliance
 4. **Security Scan** — TruffleHog secret detection
-5. **Molecule Tests** — matrix across Ubuntu 24.04, Ubuntu 22.04, Debian 13, Debian 12, Debian 11, and Rocky Linux 9
+5. **Molecule Tests** — matrix across Ubuntu 26.04, Ubuntu 24.04, Ubuntu 22.04, Debian 13, Debian 12, Debian 11, and Rocky Linux 9
 6. **Merge Check** — aggregated status check for branch protection
 
 ### Release & Publish
