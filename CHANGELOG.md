@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.7.0](https://github.com/grzegorzfranus/ansible-role-package-update/compare/v2.6.1...v2.7.0) (2026-06-01)
+
+
+### Features
+
+* add support for Ubuntu 26.04 (Resolute) ([#14](https://github.com/grzegorzfranus/ansible-role-package-update/issues/14)) ([fce692c](https://github.com/grzegorzfranus/ansible-role-package-update/commit/fce692c7704be95184085bfeb651e12b4d9ea5c6))
+
 ## [2.6.1](https://github.com/grzegorzfranus/ansible-role-package-update/compare/v2.6.0...v2.6.1) (2026-05-24)
 
 
