@@ -108,3 +108,11 @@
     success_msg: "Reboot message: {{ package_update_reboot_message }}"
   when: >
     package_update_reboot_enabled | bool
+
+- name: Package-Update | assert | Validate excluded packages list is a sequence
+  ansible.builtin.assert:
+    that:
+      - package_update_excluded_packages_list is sequence
+    fail_msg: "Excluded packages list must be a list"
+    success_msg: "Excluded packages list is a valid sequence"
+  when: package_update_excluded_packages_list is defined
