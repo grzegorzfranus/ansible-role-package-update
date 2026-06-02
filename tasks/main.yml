@@ -62,6 +62,7 @@
         src: "{{ item.source }}"
         dest: "{{ item.destination }}"
         mode: "0644"
+      changed_when: false
       when: >
         package_update_log_upgradable_packages | default(false)
       with_items:
@@ -77,6 +78,7 @@
         src: "{{ item.source }}"
         dest: "{{ item.destination }}"
         mode: "0644"
+      changed_when: false
       when: >
         package_update_log_upgradable_packages | default(false)
       with_items:
@@ -215,6 +217,7 @@
         src: "{{ item.source }}"
         dest: "{{ item.destination }}"
         mode: "0644"
+      changed_when: false
       when: >
         __package_update_faulty_services is defined and
         __package_update_faulty_services | length > 0
@@ -231,6 +234,7 @@
         src: "{{ item.source }}"
         dest: "{{ item.destination }}"
         mode: "0644"
+      changed_when: false
       when: >
         __package_update_faulty_services is defined and
         __package_update_faulty_services | length > 0

@@ -27,6 +27,7 @@
     src: "{{ item.source }}"
     dest: "{{ item.destination }}"
     mode: "0644"
+  changed_when: false
   with_items:
     - { source: 'templates/system_info.j2', destination: '{{ package_update_log_directory }}/{{ __package_update_log_file_name }}_post-system-info' }
     - { source: 'templates/post_services_info.j2', destination: '{{ package_update_log_directory }}/{{ __package_update_log_file_name }}_post-running-services' }
@@ -38,6 +39,7 @@
     src: "{{ item.source }}"
     dest: "{{ item.destination }}"
     mode: "0644"
+  changed_when: false
   with_items:
     - { source: 'templates/system_info.j2', destination: '{{ playbook_dir }}/{{ __package_update_log_file_name }}_post-system-info' }
     - { source: 'templates/post_services_info.j2', destination: '{{ playbook_dir }}/{{ __package_update_log_file_name }}_post-running-services' }
