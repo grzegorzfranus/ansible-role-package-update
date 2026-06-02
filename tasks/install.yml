@@ -28,8 +28,7 @@
         - name: Package-Update | install | Upgrade all packages with apt
           become: true
           ansible.builtin.apt:
-            name: "*"
-            state: latest
+            upgrade: dist
             dpkg_options: 'force-confdef,force-confold'
           async: 3600
           poll: 10
@@ -79,8 +78,7 @@
         - name: Package-Update | install | Upgrade all packages with exclusions (Debian)
           become: true
           ansible.builtin.apt:
-            name: "*"
-            state: latest
+            upgrade: dist
             dpkg_options: 'force-confdef,force-confold'
           async: 3600
           poll: 10
