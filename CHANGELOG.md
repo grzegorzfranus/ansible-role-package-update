@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.7.4](https://github.com/grzegorzfranus/ansible-role-package-update/compare/v2.7.3...v2.7.4) (2026-06-29)
+
+
+### Bug Fixes
+
+* correct python indentation in release workflow ([#26](https://github.com/grzegorzfranus/ansible-role-package-update/issues/26)) ([81f469d](https://github.com/grzegorzfranus/ansible-role-package-update/commit/81f469d6c687ddbf335d15b638de6554b2f7ec8e))
+
+
+### Miscellaneous
+
+* migrate workflows to github-workflows and align configuration ([#23](https://github.com/grzegorzfranus/ansible-role-package-update/issues/23)) ([2c75dc2](https://github.com/grzegorzfranus/ansible-role-package-update/commit/2c75dc25e9457a82698f3ef001be748796419fc7))
+
 ## [2.7.3](https://github.com/grzegorzfranus/ansible-role-package-update/compare/v2.7.2...v2.7.3) (2026-06-02)
 
 
