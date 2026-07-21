@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.7.6](https://github.com/grzegorzfranus/ansible-role-package-update/compare/v2.7.5...v2.7.6) (2026-07-21)
+
+
+### Bug Fixes
+
+* align role with Red Hat CoP and ansible skill standards ([#32](https://github.com/grzegorzfranus/ansible-role-package-update/issues/32)) ([2ba66b3](https://github.com/grzegorzfranus/ansible-role-package-update/commit/2ba66b3cdd3617679b3fbbf841350f0c1d35d70d))
+
 ## [2.7.5](https://github.com/grzegorzfranus/ansible-role-package-update/compare/v2.7.4...v2.7.5) (2026-07-21)
 
 
