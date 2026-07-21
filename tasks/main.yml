@@ -3,6 +3,10 @@
 # Ansible Role: Package Update - Tasks: Main
 # =============================================================================
 # Orchestrates role execution in order.
+#
+# Flow: include_vars → assert → check → prerequisites → disk_check →
+#       logging → pre_info → install → reboot_check → reboot →
+#       post_info → service_check → summary
 # =============================================================================
 
 - name: Package-Update | main | Load OS-specific variables
@@ -61,16 +65,19 @@
       ansible.builtin.template:
         src: "{{ item.source }}"
         dest: "{{ item.destination }}"
+        owner: "root"
+        group: "root"
         mode: "0644"
       changed_when: false
       when: >
-        package_update_log_upgradable_packages | default(false)
-      with_items:
+        package_update_log_upgradable_packages | default(false) | bool
+      loop:
         - { source: 'templates/packages_info.j2', destination: '{{ package_update_log_directory }}/{{ __package_update_log_file_name }}_upgradable-packages' }
       tags:
         - always
         - logging
 
+    # Note: owner/group omitted on localhost tasks as controller user cannot chown to root
     - name: Package-Update | main | Log list of packages to upgrade to local system
       delegate_to: localhost
       become: false
@@ -80,8 +87,8 @@
         mode: "0644"
       changed_when: false
       when: >
-        package_update_log_upgradable_packages | default(false)
-      with_items:
+        package_update_log_upgradable_packages | default(false) | bool
+      loop:
         - { source: 'templates/packages_info.j2', destination: '{{ playbook_dir }}/{{ __package_update_log_file_name }}_upgradable-packages' }
       tags:
         - always
@@ -216,17 +223,20 @@
       ansible.builtin.template:
         src: "{{ item.source }}"
         dest: "{{ item.destination }}"
+        owner: "root"
+        group: "root"
         mode: "0644"
       changed_when: false
       when: >
         __package_update_faulty_services is defined and
         __package_update_faulty_services | length > 0
-      with_items:
+      loop:
         - { source: 'templates/faulty_services.j2', destination: '{{ package_update_log_directory }}/{{ __package_update_log_file_name }}_faulty-services' }
       tags:
         - always
         - logging
 
+    # Note: owner/group omitted on localhost tasks as controller user cannot chown to root
     - name: Package-Update | main | Log faulty services to local system
       delegate_to: localhost
       become: false
@@ -238,7 +248,7 @@
       when: >
         __package_update_faulty_services is defined and
         __package_update_faulty_services | length > 0
-      with_items:
+      loop:
         - { source: 'templates/faulty_services.j2', destination: '{{ playbook_dir }}/{{ __package_update_log_file_name }}_faulty-services' }
       tags:
         - always

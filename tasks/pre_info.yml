@@ -26,12 +26,15 @@
   ansible.builtin.template:
     src: "{{ item.source }}"
     dest: "{{ item.destination }}"
+    owner: "root"
+    group: "root"
     mode: "0644"
   changed_when: false
-  with_items:
+  loop:
     - { source: 'templates/system_info.j2', destination: '{{ package_update_log_directory }}/{{ __package_update_log_file_name }}_pre-system-info' }
     - { source: 'templates/pre_services_info.j2', destination: '{{ package_update_log_directory }}/{{ __package_update_log_file_name }}_pre-running-services' }
 
+# Note: owner/group omitted on localhost tasks as controller user cannot chown to root
 - name: Package-Update | pre_info | Log information to local system
   delegate_to: localhost
   become: false
@@ -40,6 +43,6 @@
     dest: "{{ item.destination }}"
     mode: "0644"
   changed_when: false
-  with_items:
+  loop:
     - { source: 'templates/system_info.j2', destination: '{{ playbook_dir }}/{{ __package_update_log_file_name }}_pre-system-info' }
     - { source: 'templates/pre_services_info.j2', destination: '{{ playbook_dir }}/{{ __package_update_log_file_name }}_pre-running-services' }

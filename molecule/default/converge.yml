@@ -39,6 +39,7 @@
     package_update_display_upgradable_packages: true
     package_update_log_upgradable_packages: true
     package_update_disk_space_check_enabled: false
+    package_update_reboot_enabled: false
 
   roles:
     - role: ../../..
