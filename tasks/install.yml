@@ -133,11 +133,11 @@
         - name: Package-Update | install | Update security packages with apt
           become: true
           ansible.builtin.apt:
-            upgrade: yes
-            update_cache: yes
+            upgrade: "safe"
+            update_cache: true
             cache_valid_time: 3600
             dpkg_options: 'force-confdef,force-confold'
-            only_upgrade: '{{ (ansible_facts["distribution_version"] is version("18.04", ">=")) | ternary("yes", omit) }}'
+            only_upgrade: "{{ (ansible_facts['distribution_version'] is version('18.04', '>=')) | ternary(true, omit) }}"
             default_release: '{{ ansible_facts["distribution_release"] }}-security'
           async: 3600
           poll: 10

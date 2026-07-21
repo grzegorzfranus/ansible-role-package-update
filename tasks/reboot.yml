@@ -15,7 +15,7 @@
     post_reboot_delay: "{{ (package_update_reboot_interval | default(true)) | ternary(package_update_reboot_interval_seconds | default('10'), 0) | int }}"
   register: __package_update_reboot_result
   when: >
-    package_update_reboot_wait | default(true)
+    package_update_reboot_wait | default(true) | bool
 
 # Justification: Use shell module to trigger reboot asynchronously without blocking/waiting because the native reboot module requires waiting for the host to come back.
 - name: Package-Update | reboot | Trigger reboot without waiting
@@ -27,7 +27,7 @@
   changed_when: false
   failed_when: false
   when: >
-    not (package_update_reboot_wait | default(true))
+    not (package_update_reboot_wait | default(true) | bool)
 
 - name: Package-Update | reboot | Report reboot completion time
   ansible.builtin.debug:

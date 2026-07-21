@@ -100,11 +100,6 @@ argument_specs:
         type: int
         default: 60
 
-      package_update_reboot_wait_ctimeout:
-        description: "Sleep time between connection attempts (seconds)"
-        type: int
-        default: 5
-
       package_update_reboot_wait_delay:
         description: "Delay before attempting reconnection (seconds)"
         type: int
