@@ -46,11 +46,10 @@ package_update_mode: "all"
 package_update_include_packages_list: []
 
 # List of packages to exclude from update
-# Leave empty or undefined to update all packages
-# package_update_excluded_packages_list:
+# Leave empty to update all packages. Example:
 #   - openssh-server*
 #   - kernel*
-#   - dnf
+package_update_excluded_packages_list: []
 
 # Display available packages to upgrade in output
 package_update_display_upgradable_packages: false
@@ -94,7 +93,6 @@ package_update_abort_on_disk_space_error: true
 # -----------------------------------------------------------------------------
 # Configure reboot behavior after updates.
 
-# Message to display during reboot
 # Enable or disable reboots globally.
 # When false, reboots are skipped even if a kernel update requires one.
 # Use in environments where reboots are deferred to maintenance windows.
@@ -108,9 +106,6 @@ package_update_reboot_wait: true
 
 # Connection timeout for reboot verification (seconds)
 package_update_reboot_connect_timeout: 60
-
-# Sleep time between connection attempts (seconds)
-package_update_reboot_wait_ctimeout: 5
 
 # Delay before attempting reconnection (seconds)
 package_update_reboot_wait_delay: 10

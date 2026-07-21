@@ -48,7 +48,7 @@
   ansible.builtin.debug:
     var: __package_update_check_result.stdout_lines
   when: >
-    package_update_display_upgradable_packages | default(false) and
+    package_update_display_upgradable_packages | default(false) | bool and
     __package_update_check_result.rc == 1 and
     ansible_facts['os_family'] | lower == "redhat"
 
@@ -56,6 +56,6 @@
   ansible.builtin.debug:
     var: __package_update_check_result.stdout_lines
   when: >
-    package_update_display_upgradable_packages | default(false) and
+    package_update_display_upgradable_packages | default(false) | bool and
     __package_update_check_result.stdout_lines | length > 1 and
     ansible_facts['os_family'] | lower == "debian"

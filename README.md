@@ -189,7 +189,6 @@ Customize for specific requirements:
 | `package_update_reboot_message` | Message to display during reboot | `"Reboot initialized by Ansible"` |
 | `package_update_reboot_wait` | Wait for system to come back after reboot | `true` |
 | `package_update_reboot_connect_timeout` | Connection timeout for reboot verification (seconds) | `60` |
-| `package_update_reboot_wait_ctimeout` | Sleep time between connection attempts (seconds) | `5` |
 | `package_update_reboot_wait_delay` | Delay before attempting connection (seconds) | `10` |
 | `package_update_reboot_wait_timeout` | Maximum time to wait for connection (seconds) | `300` |
 | `package_update_reboot_interval` | Pause after reboot before continuing tasks | `true` |

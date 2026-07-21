@@ -5,7 +5,18 @@
 # Runtime validation of variable values.
 # Basic type/choice validation is handled by meta/argument_specs.yml.
 # This file performs runtime-only checks (regex patterns, content validation, cross-field logic).
+#
+# Sections:
+#   1. General Settings
+#   2. Package Management Settings
+#   3. Logging Settings
+#   4. Disk Space Verification Settings
+#   5. Reboot Settings
 # =============================================================================
+
+# -----------------------------------------------------------------------------
+# 1. General Settings
+# -----------------------------------------------------------------------------
 
 - name: Package-Update | assert | Validate supported OS family
   ansible.builtin.assert:
@@ -20,6 +31,10 @@
       - package_update_role_action in ["all", "check"]
     fail_msg: "Invalid role action '{{ package_update_role_action }}'. Allowed: all, check"
     success_msg: "Role action: {{ package_update_role_action }}"
+
+# -----------------------------------------------------------------------------
+# 2. Package Management Settings
+# -----------------------------------------------------------------------------
 
 - name: Package-Update | assert | Validate update mode choice
   ansible.builtin.assert:
@@ -38,6 +53,24 @@
   when: >
     package_update_mode == "selected"
 
+- name: Package-Update | assert | Validate excluded packages list is a sequence
+  ansible.builtin.assert:
+    that:
+      - package_update_excluded_packages_list is sequence
+    fail_msg: "Excluded packages list must be a list"
+    success_msg: "Excluded packages list is a valid sequence"
+  when: package_update_excluded_packages_list is defined
+
+- name: Package-Update | assert | Validate package management boolean flags
+  ansible.builtin.assert:
+    that:
+      - package_update_display_upgradable_packages is boolean
+    fail_msg: "Boolean flags must be true or false"
+
+# -----------------------------------------------------------------------------
+# 3. Logging Settings
+# -----------------------------------------------------------------------------
+
 - name: Package-Update | assert | Validate log directory path
   ansible.builtin.assert:
     that:
@@ -45,11 +78,19 @@
     fail_msg: "Invalid log directory '{{ package_update_log_directory }}'. Must be an absolute path"
     success_msg: "Log directory: {{ package_update_log_directory }}"
 
-- name: Package-Update | assert | Validate boolean flags
+- name: Package-Update | assert | Validate logging boolean flags
   ansible.builtin.assert:
     that:
-      - package_update_display_upgradable_packages is boolean
       - package_update_log_upgradable_packages is boolean
+    fail_msg: "Boolean flags must be true or false"
+
+# -----------------------------------------------------------------------------
+# 4. Disk Space Verification Settings
+# -----------------------------------------------------------------------------
+
+- name: Package-Update | assert | Validate disk space boolean flags
+  ansible.builtin.assert:
+    that:
       - package_update_disk_space_check_enabled is boolean
       - package_update_abort_on_disk_space_error is boolean
     fail_msg: "Boolean flags must be true or false"
@@ -78,6 +119,10 @@
   when: >
     package_update_disk_space_check_enabled | bool
 
+# -----------------------------------------------------------------------------
+# 5. Reboot Settings
+# -----------------------------------------------------------------------------
+
 - name: Package-Update | assert | Validate reboot boolean flags
   ansible.builtin.assert:
     that:
@@ -91,8 +136,6 @@
     that:
       - (package_update_reboot_connect_timeout | int) > 0
       - (package_update_reboot_connect_timeout | int) <= 3600
-      - (package_update_reboot_wait_ctimeout | int) > 0
-      - (package_update_reboot_wait_ctimeout | int) <= 3600
       - (package_update_reboot_wait_delay | int) >= 0
       - (package_update_reboot_wait_delay | int) <= 600
       - (package_update_reboot_wait_timeout | int) > 0
@@ -112,11 +155,3 @@
     success_msg: "Reboot message: {{ package_update_reboot_message }}"
   when: >
     package_update_reboot_enabled | bool
-
-- name: Package-Update | assert | Validate excluded packages list is a sequence
-  ansible.builtin.assert:
-    that:
-      - package_update_excluded_packages_list is sequence
-    fail_msg: "Excluded packages list must be a list"
-    success_msg: "Excluded packages list is a valid sequence"
-  when: package_update_excluded_packages_list is defined
