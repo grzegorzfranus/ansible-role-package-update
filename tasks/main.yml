@@ -72,7 +72,8 @@
       when: >
         package_update_log_upgradable_packages | default(false) | bool
       loop:
-        - { source: 'templates/packages_info.j2', destination: '{{ package_update_log_directory }}/{{ __package_update_log_file_name }}_upgradable-packages' }
+        - source: 'templates/packages_info.j2'
+          destination: '{{ package_update_log_directory }}/{{ __package_update_log_file_name }}_upgradable-packages'
       tags:
         - always
         - logging
@@ -89,7 +90,8 @@
       when: >
         package_update_log_upgradable_packages | default(false) | bool
       loop:
-        - { source: 'templates/packages_info.j2', destination: '{{ playbook_dir }}/{{ __package_update_log_file_name }}_upgradable-packages' }
+        - source: 'templates/packages_info.j2'
+          destination: '{{ playbook_dir }}/{{ __package_update_log_file_name }}_upgradable-packages'
       tags:
         - always
         - logging
@@ -231,7 +233,8 @@
         __package_update_faulty_services is defined and
         __package_update_faulty_services | length > 0
       loop:
-        - { source: 'templates/faulty_services.j2', destination: '{{ package_update_log_directory }}/{{ __package_update_log_file_name }}_faulty-services' }
+        - source: 'templates/faulty_services.j2'
+          destination: '{{ package_update_log_directory }}/{{ __package_update_log_file_name }}_faulty-services'
       tags:
         - always
         - logging
@@ -249,7 +252,8 @@
         __package_update_faulty_services is defined and
         __package_update_faulty_services | length > 0
       loop:
-        - { source: 'templates/faulty_services.j2', destination: '{{ playbook_dir }}/{{ __package_update_log_file_name }}_faulty-services' }
+        - source: 'templates/faulty_services.j2'
+          destination: '{{ playbook_dir }}/{{ __package_update_log_file_name }}_faulty-services'
       tags:
         - always
         - logging

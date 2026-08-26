@@ -39,7 +39,7 @@ The role executes package updates using a structured execution pipeline:
 
 ## 📋 Requirements
 
-- **Ansible**: 2.15 or higher
+- **Ansible**: 2.15 or higher (tested through 2.20+)
 - **Python**: 3.9 or higher on target hosts
 - **Network**: Internet/Intranet access to package repositories
 - **Privileges**: sudo/root access on target hosts
@@ -59,14 +59,6 @@ List of officially supported operating systems for this role:
 
 > **Note**: EL 8 is not supported — `python3-dnf` bindings are compiled for Python 3.6, which is incompatible with ansible-core >= 2.17. Use EL 9 or newer.
 
-### Ansible version
-
-Ansible >= 2.15 (fully tested with Ansible 2.15 through 2.20+)
-
-### Python version
-
-Python >= 3.9
-
 ### Setup module
 The role uses facts gathered by Ansible on the remote host. If you disable the Setup module in your playbook, the role will not work properly.
 
@@ -85,22 +77,7 @@ This role handles privilege escalation for tasks that require it. Each task expl
     - role: grzegorzfranus.package_update
 ```
 
-### 2. Advanced Configuration with Exclusions
-
-```yaml
----
-- name: Update system packages with kernel exclusion
-  hosts: all
-  roles:
-    - role: grzegorzfranus.package_update
-      vars:
-        package_update_mode: "all"
-        package_update_excluded_packages_list:
-          - "kernel*"
-          - "openssh-server*"
-```
-
-### 3. Run the playbook
+### 2. Run the playbook
 
 ```bash
 ansible-playbook -i inventory package-update.yml
@@ -124,29 +101,6 @@ package_update_reboot_enabled: true
 
 # Enable disk space verification before updates
 package_update_disk_space_check_enabled: true
-```
-
-### Advanced Configuration
-
-Customize for specific requirements:
-
-```yaml
----
-- name: Advanced Package Update Configuration
-  hosts: all
-  vars:
-    package_update_mode: "selected"
-    package_update_include_packages_list:
-      - nginx
-      - postgresql
-    package_update_log_directory: "/var/log/custom-package-update"
-    package_update_disk_check_paths:
-      - path: "/"
-        min_mb: 1000
-      - path: "/boot"
-        min_mb: 200
-  roles:
-    - role: grzegorzfranus.package_update
 ```
 
 ## 📊 Variables
@@ -250,6 +204,8 @@ cat /var/log/package-update/package-update_faulty-services
 - ✅ **Package Exclusions**: Protect critical packages from accidental upgrade
 - ✅ **Rollback Information**: Detailed logging for troubleshooting
 - ✅ **Privilege Escalation**: Per-task sudo handling (no global become required)
+- ✅ **Secret Handling**: Use Ansible Vault for passing any sensitive inventory values
+- ✅ **Log File Permissions**: Verify permissions in `package_update_log_directory` so logs containing package lists are only visible to authorized system administrators
 
 ### Uninstall
 *Not applicable.* This role acts as a lifecycle runner to perform updates rather than installing a persistent daemon.
@@ -257,19 +213,10 @@ cat /var/log/package-update/package-update_faulty-services
 ### Roll-back Capabilities
 This role does not support automatic package downgrade. Detailed package logs are kept in `package_update_log_directory` to assist manual package rolls.
 
-## 🔒 Security considerations
-
-- Use Ansible Vault for passing any sensitive inventory values.
-- Verify log files permissions in `/var/log/package-update/` to ensure logs containing package lists are only visible to authorized system administrators.
-
 ## 🧪 Check mode behavior
 
 - Package list updates and dry runs are performed in Check Mode, but no actual installation or reboots are executed.
 - System metrics and service verification runs normally in check mode.
-
-## 🏷️ Tags usage
-
-- Use `--tags` to run selective parts of the role: `validate`, `check`, `prerequisites`, `disk_check`, `install`, `reboot`, `service_check`.
 
 ## 🌐 Network resilience
 
@@ -353,6 +300,8 @@ ansible-role-package-update/
 
 ## 🏷️ Tags
 
+Use `--tags` to run selective parts of the role:
+
 | Tag | Description |
 |-----|-------------|
 | `always` | Tasks that always run (variable loading, validation, and core checks) |
@@ -370,9 +319,9 @@ ansible-role-package-update/
 
 ## CI/CD Pipeline
 
-This repository uses centralized, reusable GitHub Actions workflows from [grzegorzfranus/github-workflows](https://github.com/grzegorzfranus/github-workflows) (`v3.0.1`) for quality assurance, security scanning, and release automation.
+This repository uses centralized, reusable GitHub Actions workflows from [github-workflows](https://github.com/grzegorzfranus/github-workflows) (`@main`) for quality assurance, security scanning, and release automation.
 
-### CI Pipeline (`ansible-ci.yml@v3.0.1`)
+### CI Pipeline (`ansible-ci.yml`)
 
 Runs on every Pull Request in a two-tier gate pattern:
 
@@ -382,31 +331,41 @@ Runs on every Pull Request in a two-tier gate pattern:
 4. **Ansible Lint** — checks Ansible best practices and role standards
 5. **Galaxy Metadata Validation** — verifies `meta/main.yml` schema and requirements (`ansible-meta-validate.yml`)
 6. **Security Scanning** — TruffleHog secret detection and Trivy IaC scanning (`ansible-security.yml`)
-7. **Molecule Integration Tests** — executes Molecule test matrix across Ubuntu 26.04, Ubuntu 24.04, Ubuntu 22.04, Debian 13, Debian 12, Debian 11, and Rocky Linux 9 (`ansible-molecule.yml`)
+7. **Molecule Integration Tests** — executes Molecule test matrix across supported distros (`ansible-molecule.yml`)
 8. **Merge Check Gate** — single authoritative status check aggregating all results for branch protection
 
-### Release & Publish Pipeline (`ansible-publish.yml@v3.0.1`)
+### Release & Publish Pipeline (`ansible-publish.yml`)
 
 Automated via [Release Please](https://github.com/googleapis/release-please):
 
 1. **Push to `main`** → Release Please creates or updates a Release PR with automated changelog generation
 2. **Release PR Validation** → validates YAML syntax and actions schema before setting `Merge Check` status
 3. **Merge Release PR** → creates Git version tag and GitHub Release automatically
-4. **Ansible Galaxy Publish** → publishes tagged release to Ansible Galaxy via `ansible-publish.yml@v3.0.1` with exponential backoff retry logic
+4. **Ansible Galaxy Publish** → publishes tagged release to Ansible Galaxy via `ansible-publish.yml`
 
 ## Example Playbooks
 
+### Advanced Setup with Package Exclusions and Disk Verification
+
 ```yaml
 ---
-- name: Configure Package Update
+- name: Update system packages with exclusions and disk verification
   hosts: all
-  become: true
-  vars:
-    package_update_mode: "security"
-    package_update_reboot_enabled: true
-    package_update_disk_space_check_enabled: true
   roles:
     - role: grzegorzfranus.package_update
+      vars:
+        package_update_mode: "security"
+        package_update_reboot_enabled: true
+        package_update_disk_space_check_enabled: true
+        package_update_excluded_packages_list:
+          - "kernel*"
+          - "openssh-server*"
+        package_update_log_directory: "/var/log/custom-package-update"
+        package_update_disk_check_paths:
+          - path: "/"
+            min_mb: 1000
+          - path: "/boot"
+            min_mb: 200
 ```
 
 ## 🤝 Contributing
@@ -414,9 +373,21 @@ Automated via [Release Please](https://github.com/googleapis/release-please):
 Contributions, bug reports, and feature requests are welcome!
 
 - Fork the repository and create your branch from `main`
-- Use [Conventional Commits](https://www.conventionalcommits.org/) for commit messages
-- Centralized workflows from [github-workflows](https://github.com/grzegorzfranus/github-workflows) version `v3.0.1` are used to run CI/CD pipelines
+- Use [Conventional Commits](https://www.conventionalcommits.org/) for commit messages:
+  - `feat:` — new features
+  - `fix:` — bug fixes
+  - `refactor:` — code refactoring
+  - `docs:` — documentation changes
+  - `ci:` — CI/CD pipeline updates
+  - `build:` — dependency and build configuration updates
+  - `chore:` — maintenance tasks
+  - `test:` — test additions or corrections
+  - `perf:` — performance improvements
+  - `revert:` — code reverts
+  - `style:` — code formatting and style
+- Use branch naming convention: `feature/`, `bugfix/`, `fix/`, `hotfix/`, `release/`, `chore/`, `docs/`, `refactor/`, `test/`, `build/`, `ci/`, `perf/`, `revert/`
 - Ensure your code passes all CI checks (YAML lint, Ansible lint, Molecule tests)
+- Centralized workflows from [github-workflows](https://github.com/grzegorzfranus/github-workflows) are used to run CI/CD pipelines
 - Submit a pull request describing your changes (a template is available under `.github/PULL_REQUEST_TEMPLATE/pull_request_template.md` to help structure your PR description)
 - For major changes, please open an issue first to discuss what you would like to change (issue templates for bug reports, feature requests, and tasks are available under `.github/ISSUE_TEMPLATE/`)
 

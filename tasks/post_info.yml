@@ -31,8 +31,10 @@
     mode: "0644"
   changed_when: false
   loop:
-    - { source: 'templates/system_info.j2', destination: '{{ package_update_log_directory }}/{{ __package_update_log_file_name }}_post-system-info' }
-    - { source: 'templates/post_services_info.j2', destination: '{{ package_update_log_directory }}/{{ __package_update_log_file_name }}_post-running-services' }
+    - source: 'templates/system_info.j2'
+      destination: '{{ package_update_log_directory }}/{{ __package_update_log_file_name }}_post-system-info'
+    - source: 'templates/post_services_info.j2'
+      destination: '{{ package_update_log_directory }}/{{ __package_update_log_file_name }}_post-running-services'
 
 # Note: owner/group omitted on localhost tasks as controller user cannot chown to root
 - name: Package-Update | post_info | Log information to local system
@@ -44,5 +46,7 @@
     mode: "0644"
   changed_when: false
   loop:
-    - { source: 'templates/system_info.j2', destination: '{{ playbook_dir }}/{{ __package_update_log_file_name }}_post-system-info' }
-    - { source: 'templates/post_services_info.j2', destination: '{{ playbook_dir }}/{{ __package_update_log_file_name }}_post-running-services' }
+    - source: 'templates/system_info.j2'
+      destination: '{{ playbook_dir }}/{{ __package_update_log_file_name }}_post-system-info'
+    - source: 'templates/post_services_info.j2'
+      destination: '{{ playbook_dir }}/{{ __package_update_log_file_name }}_post-running-services'
