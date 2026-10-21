@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.2](https://github.com/grzegorzfranus/ansible-role-package-update/compare/v3.0.1...v3.0.2) (2026-10-21)
+
+
+### Documentation
+
+* **readme:** describe the current CI and release pipelines ([#45](https://github.com/grzegorzfranus/ansible-role-package-update/issues/45)) ([#46](https://github.com/grzegorzfranus/ansible-role-package-update/issues/46)) ([9bb1906](https://github.com/grzegorzfranus/ansible-role-package-update/commit/9bb19060d9db73369e072a748986faab1edfa745))
+
 ## [3.0.1](https://github.com/grzegorzfranus/ansible-role-package-update/compare/v3.0.0...v3.0.1) (2026-10-21)
 
 
