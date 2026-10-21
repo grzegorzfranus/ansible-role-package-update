@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0](https://github.com/grzegorzfranus/ansible-role-package-update/compare/v2.7.7...v3.0.0) (2026-10-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* **platforms:** drop Debian 11 (Bullseye) support ([#39](https://github.com/grzegorzfranus/ansible-role-package-update/issues/39)) (#40)
+
+### Features
+
+* **platforms:** drop Debian 11 (Bullseye) support ([#39](https://github.com/grzegorzfranus/ansible-role-package-update/issues/39)) ([#40](https://github.com/grzegorzfranus/ansible-role-package-update/issues/40)) ([872245b](https://github.com/grzegorzfranus/ansible-role-package-update/commit/872245b94f02fbab3279d8d7f5e7514917944451))
+
 ## [2.7.7](https://github.com/grzegorzfranus/ansible-role-package-update/compare/v2.7.6...v2.7.7) (2026-08-26)
 
 
